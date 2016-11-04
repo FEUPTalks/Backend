@@ -8,8 +8,8 @@ import (
 
 	"fmt"
 
-	"github.com/RAyres23/back-end/model"
-	"github.com/RAyres23/back-end/util"
+	"github.com/RAyres23/LESTeamB-backend/model"
+	"github.com/RAyres23/LESTeamB-backend/util"
 )
 
 // TalkController struct
@@ -21,7 +21,7 @@ func (c *TalkController) Index(writer http.ResponseWriter, request *http.Request
 	util.SendJSON(
 		writer,
 		request,
-		[]*model.Talk{model.NewEmptyTalk()},
+		[]*model.Talk{&model.Talk{}},
 		http.StatusOK,
 	)
 }
@@ -29,7 +29,7 @@ func (c *TalkController) Index(writer http.ResponseWriter, request *http.Request
 // Create creates a new Talk
 func (c *TalkController) Create(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
-	talkToCreate := model.NewEmptyTalk()
+	talkToCreate := &model.Talk{}
 	decoder := json.NewDecoder(request.Body)
 	error := decoder.Decode(&talkToCreate)
 	if error != nil {
