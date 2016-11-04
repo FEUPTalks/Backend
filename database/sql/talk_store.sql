@@ -1,15 +1,9 @@
-drop user 'lesteamb'@'localhost';
-drop user 'lesteamb'@'127.0.0.1';
-drop user 'lesteamb'@'::1';
+drop user if exists 'lesteamb'@'localhost';
 
 create user 'lesteamb'@'localhost' identified by '99RedBalloons';
 grant all privileges on *.* to 'lesteamb'@'localhost' with grant option;
-create user 'lesteamb'@'127.0.0.1' identified by '99RedBalloons';
-grant all privileges on *.* to 'lesteamb'@'127.0.0.1' with grant option;
-create user 'lesteamb'@'::1' identified by '99RedBalloons';
-grant all privileges on *.* to 'lesteamb'@'::1' with grant option;
 
-drop database talk_store;
+drop database if exists talk_store;
 create database talk_store;
 
 use talk_store;
