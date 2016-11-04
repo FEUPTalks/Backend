@@ -6,8 +6,7 @@ import (
 
 	"encoding/json"
 
-	"fmt"
-
+	"github.com/RAyres23/LESTeamB-backend/database"
 	"github.com/RAyres23/LESTeamB-backend/model"
 	"github.com/RAyres23/LESTeamB-backend/util"
 )
@@ -17,31 +16,48 @@ type TalkController struct {
 }
 
 // Index func return all talks in database
-func (c *TalkController) Index(writer http.ResponseWriter, request *http.Request) {
+func (*TalkController) Index(writer http.ResponseWriter, request *http.Request) {
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	talks, err := instance.GetAllTalks()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	util.SendJSON(
 		writer,
 		request,
-		[]*model.Talk{&model.Talk{}},
+		talks,
 		http.StatusOK,
 	)
 }
 
-// Create creates a new Talk
-func (c *TalkController) Create(writer http.ResponseWriter, request *http.Request) {
+//Create creates a new Talk
+func (*TalkController) Create(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
+
 	talkToCreate := &model.Talk{}
 	decoder := json.NewDecoder(request.Body)
-	error := decoder.Decode(&talkToCreate)
-	if error != nil {
-		log.Println(error.Error())
-		http.Error(writer, error.Error(), http.StatusInternalServerError)
+	err := decoder.Decode(&talkToCreate)
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	outgoingJSON, err := json.Marshal(talkToCreate)
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	instance.SaveTalk(talkToCreate)
+
 	writer.WriteHeader(http.StatusCreated)
-	fmt.Fprint(writer, string(outgoingJSON))
 }

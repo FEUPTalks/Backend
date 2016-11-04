@@ -20,6 +20,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	defer instance.CloseConnection()
 
 	err = instance.Ping()
 	if err != nil {
