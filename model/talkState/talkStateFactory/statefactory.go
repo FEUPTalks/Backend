@@ -3,7 +3,7 @@ package talkStateFactory
 import (
 	"errors"
 
-	"github.com/RAyres23/LESTeamB-backend/model/talkState"
+	"github.com/FEUPTalks/Backend/model/talkState"
 )
 
 //GetTalkState used to create TalkState implementations based on choice

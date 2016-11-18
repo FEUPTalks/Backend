@@ -8,10 +8,10 @@ import (
 
 	"errors"
 
-	"github.com/RAyres23/LESTeamB-backend/model"
+	"github.com/FEUPTalks/Backend/model"
 
 	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
-	"github.com/RAyres23/LESTeamB-backend/model/talkState/talkStateFactory"
+	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -154,5 +154,46 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 		return err
 	}
 
+	return nil
+}
+
+//SetTalk
+func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
+	stmt, err := manager.database.Prepare(`
+	UPDATE Talk SET 
+		Title=?,
+		Summary=?,
+		ProposedInitialDate=?,
+		ProposedEndDate=?,
+		DefinitiveDate=?,
+		Duration=?,
+		ProponentName=?,
+		ProponentEmail=?,
+		ProponentAffiliation=?,
+		SpeakerName=?,
+		SpeakerBrief=?,
+		SpeakerAffiliation=?,
+		SpeakerPicture=?,
+		HostName=?,
+		HostEmail=?,
+		Snack=?,
+		Room=?,
+		State=?
+	WHERE TalkID=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(talk.Title, talk.Summary, talk.ProposedInitialDate, talk.ProposedEndDate, talk.DefinitiveDate,
+		talk.Duration,
+		talk.ProponentName, talk.ProponentEmail, talk.ProponentAffiliation,
+		talk.SpeakerName, talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.GetStateValue(), talk.TalkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	return nil
 }

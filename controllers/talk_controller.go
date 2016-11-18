@@ -8,9 +8,9 @@ import (
 
 	"strconv"
 
-	"github.com/RAyres23/LESTeamB-backend/database"
-	"github.com/RAyres23/LESTeamB-backend/model"
-	"github.com/RAyres23/LESTeamB-backend/util"
+	"github.com/FEUPTalks/Backend/database"
+	"github.com/FEUPTalks/Backend/model"
+	"github.com/FEUPTalks/Backend/util"
 	"github.com/gorilla/mux"
 )
 
@@ -93,4 +93,27 @@ func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request
 		talk,
 		http.StatusOK,
 	)
+}
+
+//SetTalk func update database to a specific talkID
+func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+	talkToCreate := model.NewTalk()
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&talkToCreate)
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	instance.SetTalk(talkToCreate)
+
+	writer.WriteHeader(http.StatusOK)
 }
