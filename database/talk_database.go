@@ -8,10 +8,10 @@ import (
 
 	"errors"
 
-	"github.com/RAyres23/LESTeamB-backend/model"
+	"github.com/FEUPTalks/Backend/model"
 
 	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
-	"github.com/RAyres23/LESTeamB-backend/model/talkState/talkStateFactory"
+	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	_ "github.com/go-sql-driver/mysql"
 )
 

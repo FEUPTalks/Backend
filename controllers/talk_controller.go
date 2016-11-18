@@ -8,9 +8,9 @@ import (
 
 	"strconv"
 
-	"github.com/RAyres23/LESTeamB-backend/database"
-	"github.com/RAyres23/LESTeamB-backend/model"
-	"github.com/RAyres23/LESTeamB-backend/util"
+	"github.com/FEUPTalks/Backend/database"
+	"github.com/FEUPTalks/Backend/model"
+	"github.com/FEUPTalks/Backend/util"
 	"github.com/gorilla/mux"
 )
 

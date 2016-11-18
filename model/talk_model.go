@@ -3,8 +3,8 @@ package model
 import (
 	"time"
 
-	"github.com/RAyres23/LESTeamB-backend/model/talkState"
-	"github.com/RAyres23/LESTeamB-backend/model/talkState/talkStateFactory"
+	"github.com/FEUPTalks/Backend/model/talkState"
+	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 )
 
 //Talk struct

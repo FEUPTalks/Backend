@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/RAyres23/LESTeamB-backend/database"
-	"github.com/RAyres23/LESTeamB-backend/routers"
+	"github.com/FEUPTalks/Backend/database"
+	"github.com/FEUPTalks/Backend/routers"
 )
 
 const (

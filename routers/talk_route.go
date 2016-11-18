@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"github.com/RAyres23/LESTeamB-backend/controllers"
+	"github.com/FEUPTalks/Backend/controllers"
 	"github.com/gorilla/mux"
 )
 

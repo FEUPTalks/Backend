@@ -12,7 +12,7 @@ import (
 
 	"strings"
 
-	"github.com/RAyres23/LESTeamB-backend/util"
+	"github.com/FEUPTalks/Backend/util"
 )
 
 const (
