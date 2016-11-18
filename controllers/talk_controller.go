@@ -6,16 +6,19 @@ import (
 
 	"encoding/json"
 
+	"strconv"
+
 	"github.com/RAyres23/LESTeamB-backend/database"
 	"github.com/RAyres23/LESTeamB-backend/model"
 	"github.com/RAyres23/LESTeamB-backend/util"
+	"github.com/gorilla/mux"
 )
 
-// TalkController struct
+//TalkController struct
 type TalkController struct {
 }
 
-// Index func return all talks in database
+//Index func return all talks in the database
 func (*TalkController) Index(writer http.ResponseWriter, request *http.Request) {
 	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
@@ -42,7 +45,7 @@ func (*TalkController) Index(writer http.ResponseWriter, request *http.Request) 
 func (*TalkController) Create(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 
-	talkToCreate := &model.Talk{}
+	talkToCreate := model.NewTalk()
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&talkToCreate)
 	if err != nil {
@@ -60,4 +63,34 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 	instance.SaveTalk(talkToCreate)
 
 	writer.WriteHeader(http.StatusCreated)
+}
+
+//GetTalk func return talk with specific id from the database
+func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	vars := mux.Vars(request)
+	talkID, err := strconv.Atoi(vars["talkID"])
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+	talk, err := instance.GetTalk(talkID)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	util.SendJSON(
+		writer,
+		request,
+		talk,
+		http.StatusOK,
+	)
 }

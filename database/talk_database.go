@@ -9,7 +9,9 @@ import (
 	"errors"
 
 	"github.com/RAyres23/LESTeamB-backend/model"
+
 	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
+	"github.com/RAyres23/LESTeamB-backend/model/talkState/talkStateFactory"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -72,16 +74,24 @@ func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var talk = &model.Talk{}
+		var talk = model.NewTalk()
+		var stateTemp uint8
 		err := rows.Scan(&talk.TalkID, &talk.Title, &talk.Summary,
 			&talk.ProposedInitialDate, &talk.ProposedEndDate,
 			&talk.DefinitiveDate, &talk.Duration, &talk.ProponentName,
 			&talk.ProponentEmail, &talk.ProponentAffiliation, &talk.SpeakerName,
 			&talk.SpeakerBrief, &talk.SpeakerAffiliation, &talk.HostName,
-			&talk.HostEmail, &talk.Snack, &talk.Room)
+			&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
 		if err != nil {
 			log.Println(err)
+			continue
 		}
+		tempState, err := talkStateFactory.GetTalkState(stateTemp)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		talk.SetState(tempState)
 		talks = append(talks, talk)
 	}
 	err = rows.Err()
@@ -92,11 +102,44 @@ func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 	return talks, nil
 }
 
+//GetTalk retrieves talks with specific id from the database
+func (manager *talkDatabaseManager) GetTalk(talkID int) (*model.Talk, error) {
+	stmt, err := manager.database.Prepare("select * from talk where talkID = ?")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	var talk = model.NewTalk()
+	var stateTemp uint8
+
+	err = stmt.QueryRow(talkID).Scan(&talk.TalkID, &talk.Title, &talk.Summary,
+		&talk.ProposedInitialDate, &talk.ProposedEndDate,
+		&talk.DefinitiveDate, &talk.Duration, &talk.ProponentName,
+		&talk.ProponentEmail, &talk.ProponentAffiliation, &talk.SpeakerName,
+		&talk.SpeakerBrief, &talk.SpeakerAffiliation, &talk.HostName,
+		&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	tempState, err := talkStateFactory.GetTalkState(stateTemp)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	talk.SetState(tempState)
+
+	return talk, nil
+}
+
 func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`insert into talk (Title, Summary, ProposedInitialDate,
 											ProposedEndDate, ProponentName, ProponentEmail, ProponentAffiliation,
-											SpeakerName, SpeakerBrief, SpeakerAffiliation, HostName, HostEmail)
-											values (?,?,?,?,?,?,?,?,?,?,?,?)`)
+											SpeakerName, SpeakerBrief, SpeakerAffiliation, HostName, HostEmail, State)
+											values (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -105,7 +148,7 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	_, err = stmt.Exec(talk.Title, talk.Summary, talk.ProposedInitialDate, talk.ProposedEndDate,
 		talk.ProponentName, talk.ProponentEmail, talk.ProponentAffiliation,
 		talk.SpeakerName, talk.SpeakerBrief, talk.SpeakerAffiliation,
-		talk.HostName, talk.HostEmail)
+		talk.HostName, talk.HostEmail, talk.GetStateValue())
 	if err != nil {
 		log.Println(err)
 		return err
