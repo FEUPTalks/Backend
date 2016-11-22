@@ -1,14 +1,21 @@
 drop user if exists 'lesteamb'@'localhost';
+drop user if exists 'lesteamb'@'%';
+drop user if exists 'lesteamb'@'127.0.0.1';
 
 create user 'lesteamb'@'localhost' identified by '99RedBalloons';
-grant all privileges on *.* to 'lesteamb'@'localhost' with grant option;
+create user 'lesteamb'@'%' identified by '99RedBalloons';
+create user 'lesteamb'@'127.0.0.1' identified by '99RedBalloons';
+
+grant all privileges on talk_store.* to 'lesteamb'@'localhost' with grant option;
+grant all privileges on talk_store.* to 'lesteamb'@'%' with grant option;
+grant all privileges on talk_store.* to 'lesteamb'@'127.0.0.1' with grant option;
 
 drop database if exists talk_store;
 create database talk_store;
 
 use talk_store;
 
-create table Picture (
+create table picture (
     PictureID int unsigned not null auto_increment primary key,
     filepath varchar(200) not null
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -37,7 +44,7 @@ create table talk (
 
 alter table talk
 add foreign key (SpeakerPicture)
-references Picture(PictureID);
+references picture(PictureID);
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
@@ -53,10 +60,10 @@ SpeakerPicture, HostName, HostEmail, Snack, Room)
 values (
     'Test',
     'We are testing the talk proposal functionality',
-    '2016-11-07T00:00:00Z',
-    '2016-11-11T00:00:00Z',
-    '2016-11-10T12:00:00Z',
-    '3600000000000',
+    '2016-11-07 00:00:00',
+    '2016-11-11 00:00:00',
+    '2016-11-10 12:00:00',
+    '1',
     'proponent',
     'proponent@email.com',
     'feup',

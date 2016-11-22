@@ -80,7 +80,7 @@ func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 			&talk.ProposedInitialDate, &talk.ProposedEndDate,
 			&talk.DefinitiveDate, &talk.Duration, &talk.ProponentName,
 			&talk.ProponentEmail, &talk.ProponentAffiliation, &talk.SpeakerName,
-			&talk.SpeakerBrief, &talk.SpeakerAffiliation, &talk.HostName,
+			&talk.SpeakerBrief, &talk.SpeakerAffiliation, &talk.SpeakerPicture, &talk.HostName,
 			&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
 		if err != nil {
 			log.Println(err)
