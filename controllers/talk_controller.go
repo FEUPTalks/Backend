@@ -94,3 +94,26 @@ func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request
 		http.StatusOK,
 	)
 }
+
+//SetTalk func update database to a specific talkID
+func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+	talkToCreate := model.NewTalk()
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&talkToCreate)
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	instance.SetTalk(talkToCreate)
+
+	writer.WriteHeader(http.StatusOK)
+}
