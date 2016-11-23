@@ -43,8 +43,6 @@ func (*TalkController) Index(writer http.ResponseWriter, request *http.Request) 
 
 //Create creates a new Talk
 func (*TalkController) Create(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-
 	talkToCreate := model.NewTalk()
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&talkToCreate)
@@ -67,8 +65,6 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 
 //GetTalk func return talk with specific id from the database
 func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-
 	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
@@ -97,7 +93,6 @@ func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request
 
 //SetTalk func update database to a specific talkID
 func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
 	talkToCreate := model.NewTalk()
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&talkToCreate)
