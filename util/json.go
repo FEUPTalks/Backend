@@ -11,6 +11,7 @@ import (
 // SendJSON marshals entity to a json struct and sends appropriate headers to writer
 func SendJSON(writer http.ResponseWriter, request *http.Request, entity interface{}, code int) {
 	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 	encodedEntity, err := json.Marshal(entity)
 
