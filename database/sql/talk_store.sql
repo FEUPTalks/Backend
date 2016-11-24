@@ -42,6 +42,14 @@ create table talk (
     State tinyint unsigned default 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+create table user (
+    UserID int unsigned not null auto_increment primary key,
+    Email varchar(50) not null,
+    Name varchar(50) not null,
+    HashCode varchar(256) not null,
+    RoleValue tinyint unsigned default 3
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 alter table talk
 add foreign key (SpeakerPicture)
 references picture(PictureID);
@@ -75,4 +83,12 @@ values (
     'host@email.com',
     'Rissóis, panados, aguá e sumos naturais',
     'B219'
+);
+
+insert into user (Email, Name, HashCode, RoleValue)
+values (
+    'teste@teste.com',
+    'Teste Teste',
+    '123456789abcdef',
+    '3'
 );
