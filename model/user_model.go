@@ -1,6 +1,10 @@
 package model
 
 import (
+	"crypto/md5"
+	"fmt"
+	"time"
+
 	"github.com/FEUPTalks/Backend/model/roles"
 	"github.com/FEUPTalks/Backend/model/roles/roleFactory"
 )
@@ -32,4 +36,11 @@ func (user *User) GetRoleValue() uint8 {
 func (user *User) SetRole(role roles.Role) {
 	user.role = role
 	user.RoleValue = user.role.Handle()
+}
+
+//CreateHashCode Creates a new hashcode for the user
+func (user *User) SetNewHashCode() string {
+	data := []byte(user.Email + time.Now().Format("2006010215"))
+	user.HashCode = fmt.Sprintf("%x", md5.Sum(data))
+	return user.HashCode
 }

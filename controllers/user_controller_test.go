@@ -10,20 +10,20 @@ import (
 )
 
 var (
-	jsonStream = `{"userID": 1,"email": "teste@teste.com","name": "Teste","hashcode": "123456789abcdef","rolevalue": 3}`
+	jsonStream = `{"userID": 1,"email": "em07152@fe.up.pt","name": "Teste","hashcode": "123456789abcdef","rolevalue": 3}`
 )
 
 func Example_UserController_CreateNewUser() {
-	// userController := &controllers.UserController{}
-	// request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
-	// writer := httptest.NewRecorder()
-	// writer.Header().Set("Content-Type", "application/json")
+	userController := &controllers.UserController{}
+	request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
+	writer := httptest.NewRecorder()
+	writer.Header().Set("Content-Type", "application/json")
 
-	// userController.Create(writer, request)
-	// fmt.Println(writer.Code)
-	// userController.DeleteLastUser()
-	// // Output:
-	// //201
+	userController.Create(writer, request)
+	fmt.Println(writer.Code)
+	userController.DeleteLastUser()
+	// Output:
+	//201
 
 }
 func Example_UserController_GetUserByID() {
