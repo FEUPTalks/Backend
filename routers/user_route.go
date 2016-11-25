@@ -15,7 +15,7 @@ func SetUserRoutes(router *mux.Router) *mux.Router {
 	userController := &controllers.UserController{}
 
 	router.HandleFunc(userPath+"/{userID:[0-9a-z]+}", userController.GetUser).Methods("GET")
-	router.HandleFunc(userPath+"/{userID:[0-9a-z]+}", userController.SetUser).Methods("POST")
+	router.HandleFunc(userPath+"/{userID:[0-9a-z]+}", userController.SetUser).Methods("PUT")
 	router.HandleFunc(userPath, userController.Create).Methods("POST")
 
 	return router

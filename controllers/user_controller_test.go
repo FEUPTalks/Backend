@@ -63,7 +63,7 @@ func Example_UserController_GetUserByHashCode() {
 }
 func Example_UserController_EditUser() {
 	userController := &controllers.UserController{}
-	request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
+	request := httptest.NewRequest("PUT", "/user", bytes.NewReader([]byte(jsonStream)))
 	writer := httptest.NewRecorder()
 	writer.Header().Set("Content-Type", "application/json")
 
