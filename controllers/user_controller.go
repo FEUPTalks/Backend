@@ -138,7 +138,6 @@ func SendEmailValidation(user *model.User, request *http.Request) error {
 	)
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
-
 	subject := "FEUPTalks Validation"
 	from := "feuptalks@gmail.com"
 	//body := ParseTemplateHTML(user.Name, fmt.Sprintf("http://%s%s/%s", request.Host, request.URL.Path, user.HashCode))
@@ -154,7 +153,6 @@ func SendEmailValidation(user *model.User, request *http.Request) error {
 		[]string{user.Email},
 		[]byte(msg),
 	)
-	log.Printf("Subject:%s\nBody:%s", subject, body)
 	return err
 }
 
