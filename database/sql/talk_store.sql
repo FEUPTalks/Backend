@@ -85,6 +85,7 @@ values (
     'B219'
 );
 
+
 insert into user (Email, Name, HashCode, RoleValue)
 values (
     'teste@teste.com',
