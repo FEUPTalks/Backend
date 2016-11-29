@@ -60,8 +60,8 @@ values (
     'test'
 );
 
-insert into talk (Title, Summary, ProposedInitialDate, ProposedEndDate, DefinitiveDate,
-Duration, ProponentName, ProponentEmail, ProponentAffiliation, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
 SpeakerPicture, HostName, HostEmail, Snack, Room)
 values (
     'Test',
