@@ -78,7 +78,7 @@ values (
     '1',
     'host@email.com',
     'host@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
+    '0',
     'B219',
     'Outros que tais'
 );
