@@ -12,13 +12,11 @@ type Talk struct {
 	TalkID               int       `json:"talkID"`
 	Title                string    `json:"title"`
 	Summary              string    `json:"summary"`
-	ProposedInitialDate  time.Time `json:"proposedInitialDate"`
-	ProposedEndDate      time.Time `json:"proposedEndDate"`
-	DefinitiveDate       time.Time `json:"definitiveDate"`
+	Date  		     time.Time `json:"date"`
+	DateFlex  	     int       `json:"dateflex"`
 	Duration             uint8     `json:"duration"`
 	ProponentName        string    `json:"proponentName"`
 	ProponentEmail       string    `json:"proponentEmail"`
-	ProponentAffiliation string    `json:"proponentAffiliation"`
 	SpeakerName          string    `json:"speakerName"`
 	SpeakerBrief         string    `json:"speakerBrief"`
 	SpeakerAffiliation   string    `json:"speakerAffiliation"`

@@ -24,13 +24,11 @@ create table talk (
     TalkID int unsigned not null auto_increment primary key,
     Title varchar(50) not null,
     Summary varchar(500) not null,
-    ProposedInitialDate datetime not null,
-    ProposedEndDate datetime not null,
-    DefinitiveDate datetime not null,
+    Date datetime not null,
+    DateFlex int not null,
     Duration tinyint unsigned not null,
     ProponentName varchar(500) not null,
     ProponentEmail varchar(500) not null,
-    ProponentAffiliation varchar(50) not null,
     SpeakerName varchar(50) not null,
     SpeakerBrief varchar(50) not null,
     SpeakerAffiliation varchar(50) not null,
@@ -40,6 +38,14 @@ create table talk (
     Snack varchar(255) not null,
     Room varchar(10) not null,
     State tinyint unsigned default 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+create table user (
+    UserID int unsigned not null auto_increment primary key,
+    Email varchar(50) not null,
+    Name varchar(50) not null,
+    HashCode varchar(256) not null,
+    RoleValue tinyint unsigned default 3
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 alter table talk
@@ -61,12 +67,10 @@ values (
     'Test',
     'We are testing the talk proposal functionality',
     '2016-11-07 00:00:00',
-    '2016-11-11 00:00:00',
-    '2016-11-10 12:00:00',
-    '1',
+    '5',
+    '3',
     'proponent',
     'proponent@email.com',
-    'feup',
     'speaker',
     'É um ganda gajo',
     'harvard',
@@ -75,4 +79,13 @@ values (
     'host@email.com',
     'Rissóis, panados, aguá e sumos naturais',
     'B219'
+);
+
+
+insert into user (Email, Name, HashCode, RoleValue)
+values (
+    'teste@teste.com',
+    'Teste Teste',
+    '123456789abcdef',
+    '3'
 );
