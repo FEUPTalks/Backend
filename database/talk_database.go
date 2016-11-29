@@ -80,7 +80,7 @@ func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 			&talk.Date, &talk.DateFlex, &talk.Duration, &talk.ProponentName,
 			&talk.ProponentEmail, &talk.SpeakerName, &talk.SpeakerBrief, &talk.SpeakerAffiliation,
 			&talk.SpeakerPicture, &talk.HostName,
-			&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
+			&talk.HostEmail, &talk.Snack, &talk.Room, &talk.Other, &stateTemp)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -117,7 +117,7 @@ func (manager *talkDatabaseManager) GetTalk(talkID int) (*model.Talk, error) {
 		&talk.Date, &talk.DateFlex, &talk.Duration, &talk.ProponentName,
 		&talk.ProponentEmail, &talk.SpeakerName, &talk.SpeakerBrief, &talk.SpeakerAffiliation,
 		&talk.SpeakerPicture, &talk.HostName,
-		&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
+		&talk.HostEmail, &talk.Snack, &talk.Room, &talk.Other, &stateTemp)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -150,8 +150,9 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 			HostName, 
 			HostEmail, 
 			Snack, 
-			Room, 
-			State) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+			Room,
+			Other,
+			State) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -160,7 +161,7 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
 		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
 		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
-		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.GetStateValue())
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue())
 	if err != nil {
 		log.Println(err)
 		return err
@@ -187,7 +188,8 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		HostName=?, 
 		HostEmail=?, 
 		Snack=?, 
-		Room=?, 
+		Room=?,
+		Other=?,  
 		State=?
 	WHERE TalkID=?`)
 
@@ -199,7 +201,7 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
 		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
 		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
-		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.GetStateValue(), talk.TalkID)
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue(), talk.TalkID)
 	if err != nil {
 		log.Println(err)
 		return err

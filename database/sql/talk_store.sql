@@ -35,8 +35,9 @@ create table talk (
     SpeakerPicture int unsigned not null,
     HostName varchar(50) not null,
     HostEmail varchar(50) not null,
-    Snack varchar(255) not null,
+    Snack tinyint not null,
     Room varchar(10) not null,
+    Other varchar(1000) not null,
     State tinyint unsigned default 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -62,7 +63,7 @@ values (
 
 insert into talk (Title, Summary, Date, DateFlex,
 Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
-SpeakerPicture, HostName, HostEmail, Snack, Room)
+SpeakerPicture, HostName, HostEmail, Snack, Room,Other)
 values (
     'Test',
     'We are testing the talk proposal functionality',
@@ -78,7 +79,8 @@ values (
     'host@email.com',
     'host@email.com',
     'Rissóis, panados, aguá e sumos naturais',
-    'B219'
+    'B219',
+    'Outros que tais'
 );
 
 
