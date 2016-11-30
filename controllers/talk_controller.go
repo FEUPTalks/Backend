@@ -60,8 +60,8 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 	}
 	instance.SaveTalk(talkToCreate)
 
-	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.WriteHeader(http.StatusCreated)
 }
 
 //GetTalk func return talk with specific id from the database

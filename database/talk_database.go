@@ -80,7 +80,7 @@ func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 			&talk.Date, &talk.DateFlex, &talk.Duration, &talk.ProponentName,
 			&talk.ProponentEmail, &talk.SpeakerName, &talk.SpeakerBrief, &talk.SpeakerAffiliation,
 			&talk.SpeakerPicture, &talk.HostName,
-			&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
+			&talk.HostEmail, &talk.Snack, &talk.Room, &talk.Other, &stateTemp)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -117,7 +117,7 @@ func (manager *talkDatabaseManager) GetTalk(talkID int) (*model.Talk, error) {
 		&talk.Date, &talk.DateFlex, &talk.Duration, &talk.ProponentName,
 		&talk.ProponentEmail, &talk.SpeakerName, &talk.SpeakerBrief, &talk.SpeakerAffiliation,
 		&talk.SpeakerPicture, &talk.HostName,
-		&talk.HostEmail, &talk.Snack, &talk.Room, &stateTemp)
+		&talk.HostEmail, &talk.Snack, &talk.Room, &talk.Other, &stateTemp)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -134,10 +134,25 @@ func (manager *talkDatabaseManager) GetTalk(talkID int) (*model.Talk, error) {
 }
 
 func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
-	stmt, err := manager.database.Prepare(`insert into talk (Title, Summary, Date, DateFlex, Duration
-											ProponentName, ProponentEmail, SpeakerName, SpeakerBrief,
-											SpeakerAffiliation, HostName, HostEmail, Snack, Room, State)
-											values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+	stmt, err := manager.database.Prepare(
+		`insert into talk (
+			Title, 
+			Summary, 
+			Date, 
+			DateFlex, 
+			Duration,
+			ProponentName, 
+			ProponentEmail, 
+			SpeakerName, 
+			SpeakerBrief,
+			SpeakerAffiliation,
+			SpeakerPicture, 
+			HostName, 
+			HostEmail, 
+			Snack, 
+			Room,
+			Other,
+			State) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -146,7 +161,7 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
 		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
 		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
-		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.GetStateValue())
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue())
 	if err != nil {
 		log.Println(err)
 		return err
@@ -159,21 +174,22 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`
 	UPDATE Talk SET 
-		Title=?,
-		Summary=?,
-		Date=?,
-		DateFlex=?,
+		Title=?, 
+		Summary=?, 
+		Date=?, 
+		DateFlex=?, 
 		Duration=?,
-		ProponentName=?,
-		ProponentEmail=?,
-		SpeakerName=?,
+		ProponentName=?, 
+		ProponentEmail=?, 
+		SpeakerName=?, 
 		SpeakerBrief=?,
 		SpeakerAffiliation=?,
-		SpeakerPicture=?,
-		HostName=?,
-		HostEmail=?,
-		Snack=?,
+		SpeakerPicture=?, 
+		HostName=?, 
+		HostEmail=?, 
+		Snack=?, 
 		Room=?,
+		Other=?,  
 		State=?
 	WHERE TalkID=?`)
 
@@ -183,9 +199,9 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	}
 
 	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
-		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName, talk.SpeakerBrief,
-		talk.SpeakerAffiliation, talk.SpeakerPicture, talk.HostName, talk.HostEmail, talk.Snack,
-		talk.Room, talk.GetStateValue(), talk.TalkID)
+		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
+		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue(), talk.TalkID)
 	if err != nil {
 		log.Println(err)
 		return err
