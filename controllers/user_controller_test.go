@@ -5,8 +5,6 @@ import (
 	"context"
 	"fmt"
 	"net/http/httptest"
-
-	"github.com/FEUPTalks/Backend/controllers"
 	"testing"
 )
 
@@ -18,7 +16,7 @@ var (
 Expect Http Code: 201
  */
 func TestCreateNewUser(t *testing.T) {
-	userController := &controllers.UserController{}
+	userController := &UserController{}
 	request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
 	writer := httptest.NewRecorder()
 	writer.Header().Set("Content-Type", "application/json")
@@ -32,7 +30,7 @@ func TestCreateNewUser(t *testing.T) {
 Expect Http Code: 200
  */
 func TestGetUserByID(t *testing.T) {
-	userController := &controllers.UserController{}
+	userController := &UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
 	writer := httptest.NewRecorder()
 
@@ -48,7 +46,7 @@ func TestGetUserByID(t *testing.T) {
 Expect Http Code: 200
  */
 func TestGetUserByHashCode(t *testing.T) {
-	userController := &controllers.UserController{}
+	userController := &UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
 	writer := httptest.NewRecorder()
 
@@ -64,7 +62,7 @@ func TestGetUserByHashCode(t *testing.T) {
 Expect Http Code: 200
  */
 func TestEditUser(t *testing.T) {
-	userController := &controllers.UserController{}
+	userController := &UserController{}
 	request := httptest.NewRequest("PUT", "/user", bytes.NewReader([]byte(jsonStream)))
 	writer := httptest.NewRecorder()
 	writer.Header().Set("Content-Type", "application/json")

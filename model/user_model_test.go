@@ -1,9 +1,7 @@
-package test
+package model
 
 import (
 	"fmt"
-
-	"github.com/FEUPTalks/Backend/model"
 	"github.com/FEUPTalks/Backend/model/roles/roleFactory"
 	"testing"
 )
@@ -20,7 +18,7 @@ func TestGetSetRole(t *testing.T) {
 	roleTest2, _ := roleFactory.GetRole(2)
 	roleTest3, _ := roleFactory.GetRole(3)
 
-	exampleUser := model.NewUser()
+	exampleUser := NewUser()
 	fmt.Println(exampleUser.GetRoleValue())
 
 	exampleUser.SetRole(roleTest1)
