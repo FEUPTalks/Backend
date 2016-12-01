@@ -1,4 +1,4 @@
-package controllers_test
+package controllers
 
 import (
 	"bytes"
@@ -7,13 +7,17 @@ import (
 	"net/http/httptest"
 
 	"github.com/FEUPTalks/Backend/controllers"
+	"testing"
 )
 
 var (
 	jsonStream = `{"userID": 1,"email": "em07152@fe.up.pt","name": "Teste","hashcode": "123456789abcdef","rolevalue": 3}`
 )
 
-func Example_UserController_CreateNewUser() {
+/*
+Expect Http Code: 201
+ */
+func TestCreateNewUser(t *testing.T) {
 	userController := &controllers.UserController{}
 	request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
 	writer := httptest.NewRecorder()
@@ -22,46 +26,44 @@ func Example_UserController_CreateNewUser() {
 	userController.Create(writer, request)
 	fmt.Println(writer.Code)
 	userController.DeleteLastUser()
-	// Output:
-	//201
-
 }
-func Example_UserController_GetUserByID() {
+
+/*
+Expect Http Code: 200
+ */
+func TestGetUserByID(t *testing.T) {
 	userController := &controllers.UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
 	writer := httptest.NewRecorder()
 
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, "userID", "1")
-
 	request = request.WithContext(ctx)
 
 	userController.GetUser(writer, request)
-
 	fmt.Println(writer.Code)
-
-	// Output:
-	//200
 }
-func Example_UserController_GetUserByHashCode() {
+
+/*
+Expect Http Code: 200
+ */
+func TestGetUserByHashCode(t *testing.T) {
 	userController := &controllers.UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
 	writer := httptest.NewRecorder()
 
 	ctx := context.Background()
-
 	ctx = context.WithValue(ctx, "hashcode", "123456789abcdef")
-
 	request = request.WithContext(ctx)
 
 	userController.GetUser(writer, request)
-
 	fmt.Println(writer.Code)
-
-	// Output:
-	//200
 }
-func Example_UserController_EditUser() {
+
+/*
+Expect Http Code: 200
+ */
+func TestEditUser(t *testing.T) {
 	userController := &controllers.UserController{}
 	request := httptest.NewRequest("PUT", "/user", bytes.NewReader([]byte(jsonStream)))
 	writer := httptest.NewRecorder()
@@ -73,7 +75,4 @@ func Example_UserController_EditUser() {
 
 	userController.SetUser(writer, request)
 	fmt.Println(writer.Code)
-
-	// Output:
-	// 	200
 }

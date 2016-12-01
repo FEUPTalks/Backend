@@ -1,13 +1,21 @@
-package model_test
+package test
 
 import (
 	"fmt"
 
-	"github.com/FeupTalks/Backend/model"
-	"github.com/FeupTalks/Backend/model/roles/roleFactory"
+	"github.com/FEUPTalks/Backend/model"
+	"github.com/FEUPTalks/Backend/model/roles/roleFactory"
+	"testing"
 )
 
-func Example_User_GetSetRole() {
+/*
+Expect output:
+3
+1
+2
+3
+ */
+func TestGetSetRole(t *testing.T) {
 	roleTest1, _ := roleFactory.GetRole(1)
 	roleTest2, _ := roleFactory.GetRole(2)
 	roleTest3, _ := roleFactory.GetRole(3)
@@ -23,10 +31,4 @@ func Example_User_GetSetRole() {
 
 	exampleUser.SetRole(roleTest3)
 	fmt.Println(exampleUser.GetRoleValue())
-
-	// Output:
-	//3
-	//1
-	//2
-	//3
 }
