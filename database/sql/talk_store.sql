@@ -42,12 +42,24 @@ create table talk (
     State tinyint unsigned default 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+create table talkRegistration (
+  Email varchar(50) not null,
+  Talk int unsigned not null,
+  primary key(Talk, Email),
+  Name varchar(255) not null,
+  IsAttendingSnack boolean
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 alter table talk
 add foreign key (SpeakerPicture)
 references picture(PictureID);
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
+
+alter table talkRegistration
+add foreign key (Talk)
+references talk(TalkID);
 
 insert into picture (filepath)
 values (
