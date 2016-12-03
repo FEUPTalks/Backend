@@ -60,6 +60,7 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 	}
 	instance.SaveTalk(talkToCreate)
 
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.WriteHeader(http.StatusCreated)
 }
 

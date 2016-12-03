@@ -9,26 +9,25 @@ import (
 
 //Talk struct
 type Talk struct {
-	TalkID               int       `json:"talkID"`
-	Title                string    `json:"title"`
-	Summary              string    `json:"summary"`
-	ProposedInitialDate  time.Time `json:"proposedInitialDate"`
-	ProposedEndDate      time.Time `json:"proposedEndDate"`
-	DefinitiveDate       time.Time `json:"definitiveDate"`
-	Duration             uint8     `json:"duration"`
-	ProponentName        string    `json:"proponentName"`
-	ProponentEmail       string    `json:"proponentEmail"`
-	ProponentAffiliation string    `json:"proponentAffiliation"`
-	SpeakerName          string    `json:"speakerName"`
-	SpeakerBrief         string    `json:"speakerBrief"`
-	SpeakerAffiliation   string    `json:"speakerAffiliation"`
-	SpeakerPicture       int       `json:"speakerPicture"`
-	HostName             string    `json:"hostName"`
-	HostEmail            string    `json:"hostEmail"`
-	Snack                string    `json:"snack"`
-	Room                 string    `json:"room"`
-	StateValue           uint8     `json:"state"`
-	state                talkState.TalkState
+	TalkID             int       `json:"talkID"`
+	Title              string    `json:"title"`
+	Summary            string    `json:"summary"`
+	Date               time.Time `json:"date"`
+	DateFlex           int       `json:"dateflex"`
+	Duration           uint8     `json:"duration"`
+	ProponentName      string    `json:"proponentName"`
+	ProponentEmail     string    `json:"proponentEmail"`
+	SpeakerName        string    `json:"speakerName"`
+	SpeakerBrief       string    `json:"speakerBrief"`
+	SpeakerAffiliation string    `json:"speakerAffiliation"`
+	SpeakerPicture     int       `json:"speakerPicture"`
+	HostName           string    `json:"hostName"`
+	HostEmail          string    `json:"hostEmail"`
+	Snack              int       `json:"snack"`
+	Room               string    `json:"room"`
+	Other              string    `json:"other"`
+	StateValue         uint8     `json:"state"`
+	state              talkState.TalkState
 }
 
 //NewTalk creates a new empty Talk
