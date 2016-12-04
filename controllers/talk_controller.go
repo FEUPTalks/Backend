@@ -43,6 +43,7 @@ func (*TalkController) Index(writer http.ResponseWriter, request *http.Request) 
 
 //Create creates a new Talk
 func (*TalkController) Create(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	talkToCreate := model.NewTalk()
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&talkToCreate)
@@ -60,7 +61,6 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 	}
 	instance.SaveTalk(talkToCreate)
 
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.WriteHeader(http.StatusCreated)
 }
 
