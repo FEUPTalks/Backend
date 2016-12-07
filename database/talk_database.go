@@ -136,20 +136,20 @@ func (manager *talkDatabaseManager) GetTalk(talkID int) (*model.Talk, error) {
 func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(
 		`insert into talk (
-			Title, 
-			Summary, 
-			Date, 
-			DateFlex, 
+			Title,
+			Summary,
+			Date,
+			DateFlex,
 			Duration,
-			ProponentName, 
-			ProponentEmail, 
-			SpeakerName, 
+			ProponentName,
+			ProponentEmail,
+			SpeakerName,
 			SpeakerBrief,
 			SpeakerAffiliation,
-			SpeakerPicture, 
-			HostName, 
-			HostEmail, 
-			Snack, 
+			SpeakerPicture,
+			HostName,
+			HostEmail,
+			Snack,
 			Room,
 			Other,
 			State) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
@@ -170,26 +170,49 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 	return nil
 }
 
+func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model.TalkRegistration) error {
+	stmt, err := manager.database.Prepare(
+		`insert into talkRegistration (
+			Email,
+			TalkID,
+			Name,
+			IsAttendingSnack) values (?,?,?,?)`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(talkRegistration.Email, talkRegistration.TalkID,
+		talkRegistration.Name, talkRegistration.IsAttendingSnack)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 //SetTalk
 func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`
-	UPDATE Talk SET 
-		Title=?, 
-		Summary=?, 
-		Date=?, 
-		DateFlex=?, 
+	UPDATE Talk SET
+		Title=?,
+		Summary=?,
+		Date=?,
+		DateFlex=?,
 		Duration=?,
-		ProponentName=?, 
-		ProponentEmail=?, 
-		SpeakerName=?, 
+		ProponentName=?,
+		ProponentEmail=?,
+		SpeakerName=?,
 		SpeakerBrief=?,
 		SpeakerAffiliation=?,
-		SpeakerPicture=?, 
-		HostName=?, 
-		HostEmail=?, 
-		Snack=?, 
+		SpeakerPicture=?,
+		HostName=?,
+		HostEmail=?,
+		Snack=?,
 		Room=?,
-		Other=?,  
+		Other=?,
 		State=?
 	WHERE TalkID=?`)
 

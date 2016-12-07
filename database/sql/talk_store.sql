@@ -43,8 +43,8 @@ create table talk (
 
 create table talkRegistration (
   Email varchar(50) not null,
-  Talk int unsigned not null,
-  primary key(Talk, Email),
+  TalkID int unsigned not null,
+  primary key(TalkID, Email),
   Name varchar(255) not null,
   IsAttendingSnack boolean
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -65,7 +65,7 @@ alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
 
 alter table talkRegistration
-add foreign key (Talk)
+add foreign key (TalkID)
 references talk(TalkID);
 
 insert into picture (filepath)
@@ -91,7 +91,7 @@ values (
     'host@email.com',
     'host@email.com',
     'Rissóis, panados, aguá e sumos naturais',
-    'B219'
+    'B219',
     'Outros que tais'
 );
 

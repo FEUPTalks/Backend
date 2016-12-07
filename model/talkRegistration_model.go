@@ -6,3 +6,9 @@ type TalkRegistration struct {
 	TalkID           int    `json:"talkID"`
 	IsAttendingSnack bool   `json:"isAttendingSnack"`
 }
+
+//Creates a new empty Talk Registration
+func NewTalkRegistration() *TalkRegistration {
+	talkRegistration := &TalkRegistration{}
+	return talkRegistration
+}

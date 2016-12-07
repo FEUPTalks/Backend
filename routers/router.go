@@ -7,5 +7,6 @@ func InitRoutes() *mux.Router {
 	router := mux.NewRouter()
 	router = SetTalksRoutes(router)
 	router = SetPictureRoutes(router)
+	router = SetTalkRegistrationRoutes(router)
 	return router
 }
