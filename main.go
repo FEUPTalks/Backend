@@ -4,8 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/FEUPTalks/Backend/core/authentication"
 	"github.com/FEUPTalks/Backend/database"
 	"github.com/FEUPTalks/Backend/routers"
+	"github.com/FEUPTalks/Backend/settings"
+	"github.com/urfave/negroni"
 )
 
 const (
@@ -14,21 +17,46 @@ const (
 
 func main() {
 
-	//Init database access
-	instance, err := database.GetTalkDatabaseManagerInstance()
+	//Init Settings
+	settings.Init()
+
+	//Init Keys
+	_, err := authentication.GetJWTAuthenticationBackend()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	defer instance.CloseConnection()
 
-	err = instance.Ping()
+	//Init talk database access
+	talkInstance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer talkInstance.CloseConnection()
+
+	err = talkInstance.Ping()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	//Init user database access
+	userInstance, err := database.GetUserDatabaseManagerInstance()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer userInstance.CloseConnection()
+
+	err = userInstance.Ping()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
 	router := routers.InitRoutes()
-	http.Handle("/", router)
-	log.Fatal(http.ListenAndServe(":"+listeningPort, nil))
+	n := negroni.Classic()
+	n.UseHandler(router)
+	log.Fatal(http.ListenAndServe(":"+listeningPort, n))
 }

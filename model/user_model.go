@@ -7,11 +7,12 @@ import (
 
 	"github.com/FEUPTalks/Backend/model/roles"
 	"github.com/FEUPTalks/Backend/model/roles/roleFactory"
+	"github.com/google/uuid"
 )
 
 //User struct
 type User struct {
-	UserID    int    `json:"userID"`
+	UUID      uuid.UUID
 	Email     string `json:"email"`
 	Name      string `json:"name"`
 	HashCode  string `json:"hashcode"`

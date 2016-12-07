@@ -11,6 +11,8 @@ import (
 	"github.com/FEUPTalks/Backend/model"
 
 	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
+
+	"github.com/FEUPTalks/Backend/model/talkState"
 	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -68,6 +70,43 @@ func (manager *talkDatabaseManager) Ping() error {
 func (manager *talkDatabaseManager) GetAllTalks() ([]*model.Talk, error) {
 	talks := make([]*model.Talk, 0)
 	rows, err := manager.database.Query("select * from talk")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var talk = model.NewTalk()
+		var stateTemp uint8
+		err := rows.Scan(&talk.TalkID, &talk.Title, &talk.Summary,
+			&talk.Date, &talk.DateFlex, &talk.Duration, &talk.ProponentName,
+			&talk.ProponentEmail, &talk.SpeakerName, &talk.SpeakerBrief, &talk.SpeakerAffiliation,
+			&talk.SpeakerPicture, &talk.HostName,
+			&talk.HostEmail, &talk.Snack, &talk.Room, &talk.Other, &stateTemp)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		tempState, err := talkStateFactory.GetTalkState(stateTemp)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		talk.SetState(tempState)
+		talks = append(talks, talk)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return talks, nil
+}
+
+//GetTalksWithState retrieves all talks with the given state from the database
+func (manager *talkDatabaseManager) GetTalksWithState(state talkState.TalkState) ([]*model.Talk, error) {
+	talks := make([]*model.Talk, 0)
+	rows, err := manager.database.Query("select * from talk where state = ?", state.Handle())
 	if err != nil {
 		log.Println(err)
 		return nil, err

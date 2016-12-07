@@ -9,16 +9,19 @@ create user 'lesteamb'@'127.0.0.1' identified by '99RedBalloons';
 grant all privileges on talk_store.* to 'lesteamb'@'localhost' with grant option;
 grant all privileges on talk_store.* to 'lesteamb'@'%' with grant option;
 grant all privileges on talk_store.* to 'lesteamb'@'127.0.0.1' with grant option;
+grant all privileges on user_store.* to 'lesteamb'@'localhost' with grant option;
+grant all privileges on user_store.* to 'lesteamb'@'%' with grant option;
+grant all privileges on user_store.* to 'lesteamb'@'127.0.0.1' with grant option;
 
 drop database if exists talk_store;
-create database talk_store;
+create database talk_store character set utf8;
 
 use talk_store;
 
 create table picture (
     PictureID int unsigned not null auto_increment primary key,
     filepath varchar(200) not null
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 create table talk (
     TalkID int unsigned not null auto_increment primary key,
@@ -39,7 +42,7 @@ create table talk (
     Room varchar(10) not null,
     Other varchar(1000) not null,
     State tinyint unsigned default 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 create table talkRegistration (
   Email varchar(50) not null,
@@ -47,15 +50,7 @@ create table talkRegistration (
   primary key(TalkID, Email),
   Name varchar(255) not null,
   IsAttendingSnack boolean
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-create table user (
-    UserID int unsigned not null auto_increment primary key,
-    Email varchar(50) not null,
-    Name varchar(50) not null,
-    HashCode varchar(256) not null,
-    RoleValue tinyint unsigned default 3
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 alter table talk
 add foreign key (SpeakerPicture)
@@ -115,14 +110,6 @@ values (
     'Rissóis, panados, aguá e sumos naturais',
     'B219',
     'Outros que tais'
-);
-
-insert into user (Email, Name, HashCode, RoleValue)
-values (
-    'teste@teste.com',
-    'Teste Teste',
-    '123456789abcdef',
-    '3'
 );
 
 insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
