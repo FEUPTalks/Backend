@@ -15,6 +15,7 @@ func SetTalkRegistrationRoutes(router *mux.Router) *mux.Router {
 	talkRegistrationController := &controllers.TalkRegistrationController{}
 
 	router.HandleFunc(talkRegistrationPath, talkRegistrationController.Create).Methods("POST")
+	router.HandleFunc(talkRegistrationPath+"/{talkID:[0-9]+}", talkRegistrationController.GetTalkRegistrationsWithTalkID).Methods("GET")
 
 	return router
 }

@@ -95,6 +95,27 @@ values (
     'Outros que tais'
 );
 
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+SpeakerPicture, HostName, HostEmail, Snack, Room,Other)
+values (
+    'Test2',
+    'We are testing the talk proposal functionality',
+    '2016-11-07 00:00:00',
+    '5',
+    '3',
+    'proponent2',
+    'proponent2@email.com',
+    'speaker2',
+    'É um ganda gajo',
+    'harvard',
+    '1',
+    'host2@email.com',
+    'host2@email.com',
+    'Rissóis, panados, aguá e sumos naturais',
+    'B219',
+    'Outros que tais'
+);
 
 insert into user (Email, Name, HashCode, RoleValue)
 values (
@@ -102,4 +123,36 @@ values (
     'Teste Teste',
     '123456789abcdef',
     '3'
+);
+
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+values (
+    'bob_d_girl@hotmale.com',
+    '1',
+    'Bob Faget',
+    '1'
+);
+
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+values (
+    'stefania_d_guy@hotmale.com',
+    '1',
+    'Stefania Dud',
+    '0'
+);
+
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+values (
+    'dark_snipz@2gud4u.com',
+    '2',
+    'Dark Snipz',
+    '1'
+);
+
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+values (
+    'johndoe@default.com',
+    '1',
+    'John Doe',
+    '1'
 );
