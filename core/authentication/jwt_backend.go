@@ -121,7 +121,7 @@ func (backend *jwtAuthenticationBackend) Logout(tokenString string, token *jwt.T
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
-	privateKeyFile, err := os.Open(settings.Get().PrivateKeyPath)
+	privateKeyFile, err := os.Open(settings.Get().GetPrivateKeyPath());
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -149,7 +149,7 @@ func getPrivateKey() (*rsa.PrivateKey, error) {
 }
 
 /*func getPublicKey() *rsa.PublicKey {
-	publicKeyFile, err := os.Open(settings.Get().PublicKeyPath)
+	publicKeyFile, err := os.Open(settings.Get().GetPublicKeyPath())
 	if err != nil {
 		panic(err)
 	}

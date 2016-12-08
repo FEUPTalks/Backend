@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 var environments = map[string]string{
@@ -17,6 +18,16 @@ type Settings struct {
 	PrivateKeyPath     string
 	PublicKeyPath      string
 	JWTExpirationDelta int
+}
+
+func (s Settings) GetPrivateKeyPath() string {
+	absPath, _ := filepath.Abs(s.PrivateKeyPath);
+	return absPath;
+}
+
+func (s Settings) GetPublicKeyPath() string {
+	absPath, _ := filepath.Abs(s.PublicKeyPath);
+	return absPath;
 }
 
 var settings Settings = Settings{}

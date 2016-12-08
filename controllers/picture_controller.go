@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	filepath string = "C:\\Users\\Renato\\Desktop\\"
+	filepath string = "Users/Pedro/Documents/"
 )
 
 var allowedTypes = [...]string{"image/jpeg", "image/jpg", "image/png"}
