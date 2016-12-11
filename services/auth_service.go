@@ -13,32 +13,26 @@ import (
 )
 
 //Login user login function
-func Login(requestUser *model.LoginInfo) ([]byte, error) {
+func Login(requestUser *model.LoginInfo) (*model.Profile, error) {
 	authBackend, err := authentication.GetJWTAuthenticationBackend()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	uuid, err := authBackend.Authenticate(requestUser)
+	user, err := authBackend.Authenticate(requestUser)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	token, err := authBackend.GenerateToken(uuid)
+	token, err := authBackend.GenerateToken(user.UUID)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	mappedToken, err := json.Marshal(token)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return mappedToken, nil
+	return &model.Profile{user.Name, user.Email, user.RoleValue, token}, nil
 }
 
 //RefreshToken
