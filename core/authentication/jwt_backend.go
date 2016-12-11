@@ -77,30 +77,30 @@ func (backend *jwtAuthenticationBackend) GenerateToken(userUUID uuid.UUID) (stri
 	return tokenString, nil
 }
 
-func (backend *jwtAuthenticationBackend) Authenticate(user *model.LoginInfo) (uuid.UUID, error) {
+func (backend *jwtAuthenticationBackend) Authenticate(user *model.LoginInfo) (*model.User, error) {
 
 	instance, err := database.GetUserDatabaseManagerInstance()
 	if err != nil {
 		log.Println(err)
-		return uuid.Nil, err
+		return nil, err
 	}
 
 	checkUser, err := instance.GetUserByEmail(user.Username)
 	if err != nil {
 		log.Println(err)
 		if err == sql.ErrNoRows {
-			return uuid.Nil, ErrUserNotFound
+			return nil, ErrUserNotFound
 		}
-		return uuid.Nil, err
+		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(checkUser.HashCode), []byte(user.Password))
 	if err != nil {
 		log.Println(err)
-		return uuid.Nil, err
+		return nil, err
 	}
 
-	return checkUser.UUID, nil
+	return checkUser, nil
 }
 
 func (backend *jwtAuthenticationBackend) getTokenRemainingValidity(timestamp interface{}) int {

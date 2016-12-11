@@ -1,6 +1,6 @@
 package model
 
-type TalkRegistration struct {
+type Attendee struct {
 	Name             string `json:"name"`
 	Email            string `json:"email"`
 	TalkID           int    `json:"talkID"`
@@ -8,7 +8,7 @@ type TalkRegistration struct {
 }
 
 //Creates a new empty Talk Registration
-func NewTalkRegistration() *TalkRegistration {
-	talkRegistration := &TalkRegistration{}
+func NewTalkRegistration() *Attendee {
+	talkRegistration := &Attendee{}
 	return talkRegistration
 }

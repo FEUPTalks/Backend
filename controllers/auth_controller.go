@@ -17,16 +17,14 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	decoder := json.NewDecoder(request.Body)
 	decoder.Decode(&requestUser)
 
-	token, err := services.Login(requestUser)
+	profile, err := services.Login(requestUser)
 	if err != nil {
 		log.Println(err)
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
-	writer.Write(token)
+	util.SendJSON(writer, request, profile, http.StatusOK);
 }
 
 //RefreshToken

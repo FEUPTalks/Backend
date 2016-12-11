@@ -9,6 +9,7 @@ import (
 	"github.com/FEUPTalks/Backend/routers"
 	"github.com/FEUPTalks/Backend/settings"
 	"github.com/urfave/negroni"
+	"github.com/rs/cors"
 )
 
 const (
@@ -55,8 +56,13 @@ func main() {
 		return
 	}
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+	})
+
 	router := routers.InitRoutes()
 	n := negroni.Classic()
+	n.Use(c)
 	n.UseHandler(router)
 	log.Fatal(http.ListenAndServe(":"+listeningPort, n))
 }

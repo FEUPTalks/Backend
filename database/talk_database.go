@@ -210,8 +210,8 @@ func (manager *talkDatabaseManager) SaveTalk(talk *model.Talk) error {
 }
 
 //Returns all of the attendees that are registered in a given talk with ID == talkID
-func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) ([]*model.TalkRegistration, error) {
-	talkRegistrations := make([]*model.TalkRegistration, 0)
+func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) ([]*model.Attendee, error) {
+	talkRegistrations := make([]*model.Attendee, 0)
 	stmt, err := manager.database.Prepare("select * from talkRegistration where talkID = ?")
 	if err != nil {
 		log.Println(err)
@@ -247,7 +247,7 @@ func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) (
 	return talkRegistrations, nil
 }
 
-func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model.TalkRegistration) error {
+func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model.Attendee) error {
 	stmt, err := manager.database.Prepare(
 		`insert into talkRegistration (
 			Email,
