@@ -159,6 +159,29 @@ func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request
 	writer.WriteHeader(http.StatusOK)
 }
 
+//SetTalkState update database talk input talkid and state to change
+func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
+	vars := mux.Vars(request)
+	talkID, err := strconv.Atoi(vars["talkID"])
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+	newState, err := strconv.Atoi(request.URL.Query().Get("state"))
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	instance.SetTalkState(talkID, newState)
+	writer.WriteHeader(http.StatusOK)
+}
+
 func getTalksWithState(state string) ([]*model.Talk, error) {
 	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
