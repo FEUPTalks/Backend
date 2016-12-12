@@ -19,6 +19,7 @@ type TalkRegistrationController struct {
 //Creates a new Talk Registration
 func (*TalkRegistrationController) Create(writer http.ResponseWriter, request *http.Request) {
 	talkRegistrationToCreate := model.NewTalkRegistration()
+
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&talkRegistrationToCreate)
 	if err != nil {
@@ -33,7 +34,11 @@ func (*TalkRegistrationController) Create(writer http.ResponseWriter, request *h
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	talkRegistrationLogToCreate := model.NewTalkRegistrationLog(talkRegistrationToCreate, 0)
+
 	instance.SaveTalkRegistration(talkRegistrationToCreate)
+	instance.SaveTalkRegistrationLog(talkRegistrationLogToCreate)
 
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.WriteHeader(http.StatusCreated)

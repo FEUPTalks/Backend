@@ -46,7 +46,19 @@ create table talkRegistration (
   TalkID int unsigned not null,
   primary key(TalkID, Email),
   Name varchar(255) not null,
-  IsAttendingSnack boolean
+  IsAttendingSnack boolean,
+  WantsToReceiveNotifications boolean
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+create table talkRegistrationLog (
+  LogID int unsigned not null auto_increment primary key,
+  Email varchar(50) not null,
+  TalkID int unsigned not null,
+  Name varchar(255) not null,
+  IsAttendingSnack boolean,
+  WantsToReceiveNotifications boolean,
+  TransactionType tinyint unsigned default 0,
+  TransactionDate datetime
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 create table user (
@@ -125,34 +137,38 @@ values (
     '3'
 );
 
-insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack, WantsToReceiveNotifications)
 values (
     'bob_d_girl@hotmale.com',
     '1',
     'Bob Faget',
+    '1',
     '1'
 );
 
-insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack, WantsToReceiveNotifications)
 values (
     'stefania_d_guy@hotmale.com',
     '1',
     'Stefania Dud',
+    '0',
     '0'
 );
 
-insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack, WantsToReceiveNotifications)
 values (
     'dark_snipz@2gud4u.com',
     '2',
     'Dark Snipz',
+    '1',
     '1'
 );
 
-insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack)
+insert into talkRegistration (Email, TalkID, Name, IsAttendingSnack, WantsToReceiveNotifications)
 values (
     'johndoe@default.com',
     '1',
     'John Doe',
-    '1'
+    '1',
+    '0'
 );
