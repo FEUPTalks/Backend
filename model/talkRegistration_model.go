@@ -9,7 +9,7 @@ type TalkRegistration struct {
 }
 
 //Creates a new empty Talk Registration
-func NewTalkRegistration() *Attendee {
-	talkRegistration := &Attendee{}
+func NewTalkRegistration() *TalkRegistration {
+	talkRegistration := &TalkRegistration{}
 	return talkRegistration
 }
