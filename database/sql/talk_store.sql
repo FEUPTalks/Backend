@@ -132,7 +132,6 @@ values (
     'Outros que tais'
 );
 
-<<<<<<< HEAD
 insert into user (Email, Name, HashCode, RoleValue)
 values (
     'teste@teste.com',
