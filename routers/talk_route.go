@@ -21,7 +21,7 @@ func SetTalksRoutes(router *mux.Router) *mux.Router {
 		negroni.New(
 			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
 			negroni.HandlerFunc(talkController.All),
-		)).Methods("GET")
+		)).Methods("GET", "OPTIONS")
 	router.HandleFunc(talkPath+"/{talkID:[0-9]+}", talkController.GetTalk).Methods("GET")
 	router.Handle(talkPath+"/{talkID:[0-9]+}",
 		negroni.New(
