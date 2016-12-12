@@ -337,3 +337,23 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	}
 	return nil
 }
+
+//SetTalkState
+func (manager *talkDatabaseManager) SetTalkState(talkID *int, state *int) error {
+	stmt, err := manager.database.Prepare(`
+	UPDATE Talk SET
+		State=?
+	WHERE TalkID=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(state, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
