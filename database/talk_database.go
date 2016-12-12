@@ -357,3 +357,23 @@ func (manager *talkDatabaseManager) SetTalkState(talkID int, state int) error {
 	}
 	return nil
 }
+
+//SetTalkRoom
+func (manager *talkDatabaseManager) SetTalkRoom(talkID int, room string) error {
+	stmt, err := manager.database.Prepare(`
+	UPDATE Talk SET
+		Room=?
+	WHERE TalkID=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(room, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
