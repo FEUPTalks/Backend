@@ -339,7 +339,7 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 }
 
 //SetTalkState
-func (manager *talkDatabaseManager) SetTalkState(talkID *int, state *int) error {
+func (manager *talkDatabaseManager) SetTalkState(talkID int, state int) error {
 	stmt, err := manager.database.Prepare(`
 	UPDATE Talk SET
 		State=?
