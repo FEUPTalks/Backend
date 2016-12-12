@@ -230,7 +230,7 @@ func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) (
 	for rows.Next() {
 		var talkRegistration = model.NewTalkRegistration()
 		err = rows.Scan(&talkRegistration.Email, &talkRegistration.TalkID, &talkRegistration.Name,
-			&talkRegistration.IsAttendingSnack)
+			&talkRegistration.IsAttendingSnack, &talkRegistration.WantsToReceiveNotifications)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -253,7 +253,8 @@ func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model
 			Email,
 			TalkID,
 			Name,
-			IsAttendingSnack) values (?,?,?,?)`)
+			IsAttendingSnack,
+			WantsToReceiveNotifications) values (?,?,?,?,?)`)
 
 	if err != nil {
 		log.Println(err)
@@ -261,7 +262,35 @@ func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model
 	}
 
 	_, err = stmt.Exec(talkRegistration.Email, talkRegistration.TalkID,
-		talkRegistration.Name, talkRegistration.IsAttendingSnack)
+		talkRegistration.Name, talkRegistration.IsAttendingSnack, talkRegistration.WantsToReceiveNotifications)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+//Adds a talk registration log
+func (manager *talkDatabaseManager) SaveTalkRegistrationLog(talkRegistrationLog *model.TalkRegistrationLog) error {
+	stmt, err := manager.database.Prepare(
+		`insert into talkRegistrationLog (
+			Email,
+			TalkID,
+			Name,
+			IsAttendingSnack,
+			WantsToReceiveNotifications,
+			TransactionType,
+			TransactionDate) values (?,?,?,?,?,?,?)`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(talkRegistrationLog.Email, talkRegistrationLog.TalkID,
+		talkRegistrationLog.Name, talkRegistrationLog.IsAttendingSnack, talkRegistrationLog.WantsToReceiveNotifications,
+		talkRegistrationLog.TransactionType, talkRegistrationLog.TransactionDate)
 	if err != nil {
 		log.Println(err)
 		return err
