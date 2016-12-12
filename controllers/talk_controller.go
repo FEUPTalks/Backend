@@ -161,6 +161,7 @@ func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request
 
 //SetTalkState update database talk input talkid and state to change
 func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
+	log.Println("SetTalkState")
 	vars := mux.Vars(request)
 	talkID, err := strconv.Atoi(vars["talkID"])
 	if err != nil {
@@ -172,6 +173,10 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
 		return
 	}
+	if newState == 0 {
+		http.Error(writer, "State=0", http.StatusInternalServerError)
+		return
+	}
 	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
 		log.Println(err)
@@ -179,6 +184,30 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		return
 	}
 	instance.SetTalkState(talkID, newState)
+	writer.WriteHeader(http.StatusOK)
+}
+
+//SetTalkRoom update database talk input talkid and room to change
+func (*TalkController) SetTalkRoom(writer http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
+	log.Println("SetTalkRoom")
+	vars := mux.Vars(request)
+	talkID, err := strconv.Atoi(vars["talkID"])
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+	room := request.URL.Query().Get("room")
+	if room == "" {
+		http.Error(writer, "Room=null", http.StatusInternalServerError)
+		return
+	}
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	instance.SetTalkRoom(talkID, room)
 	writer.WriteHeader(http.StatusOK)
 }
 
