@@ -23,3 +23,33 @@ func GetTalkState(state uint8) (talkState.TalkState, error) {
 		return nil, errors.New("Requested state not available")
 	}
 }
+
+//GetProposedTalkStateValue
+func GetProposedTalkStateValue() uint8 {
+	state := &talkState.ProposedTalkState{}
+	return state.Handle()
+}
+
+//GetRejectedTalkStateValue
+func GetRejectedTalkStateValue() uint8 {
+	state := &talkState.RejectedTalkState{}
+	return state.Handle()
+}
+
+//GetAcceptedTalkStateValue
+func GetAcceptedTalkStateValue() uint8 {
+	state := &talkState.AcceptedTalkState{}
+	return state.Handle()
+}
+
+//GetPublishedTalkStateValue
+func GetPublishedTalkStateValue() uint8 {
+	state := &talkState.PublishedTalkState{}
+	return state.Handle()
+}
+
+//GetArchivedTalkStateValue
+func GetArchivedTalkStateValue() uint8 {
+	state := &talkState.ArchivedTalkState{}
+	return state.Handle()
+}

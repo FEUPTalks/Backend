@@ -13,10 +13,11 @@ import (
 	"strings"
 
 	"github.com/FEUPTalks/Backend/util"
+	"log"
 )
 
 const (
-	filepath string = "C:\\Users\\Renato\\Desktop\\"
+	filepath string = "Users/Pedro/Documents/"
 )
 
 var allowedTypes = [...]string{"image/jpeg", "image/jpg", "image/png"}
@@ -47,6 +48,8 @@ func okContentType(fileType string) bool {
 //Upload upload files to the server
 func (*PictureController) Upload(writer http.ResponseWriter, request *http.Request) {
 	file, info, err := request.FormFile("picture")
+
+	log.Println(request.FormFile("picture"));
 
 	if err != nil {
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
@@ -114,6 +117,7 @@ func (*PictureController) Download(writer http.ResponseWriter, request *http.Req
 
 	buffer = data.Bytes()
 
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Content-Type", allowedTypes[2])
 	writer.Write(buffer)
 }

@@ -40,7 +40,6 @@ func (*TalkRegistrationController) Create(writer http.ResponseWriter, request *h
 	instance.SaveTalkRegistration(talkRegistrationToCreate)
 	instance.SaveTalkRegistrationLog(talkRegistrationLogToCreate)
 
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.WriteHeader(http.StatusCreated)
 }
 
