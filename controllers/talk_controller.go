@@ -10,13 +10,15 @@ import (
 
 	"errors"
 
+	"github.com/FEUPTalks/Backend/core/authentication"
 	"github.com/FEUPTalks/Backend/database"
 	"github.com/FEUPTalks/Backend/model"
 	"github.com/FEUPTalks/Backend/model/talkState"
+	"github.com/FEUPTalks/Backend/settings"
 	//"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
+	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	"github.com/FEUPTalks/Backend/util"
 	"github.com/gorilla/mux"
-	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 )
 
 //TalkController struct
@@ -26,8 +28,24 @@ type TalkController struct {
 //All func return all talks in the database
 func (*TalkController) All(writer http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
 
+	authBackend, err := authentication.GetJWTAuthenticationBackend()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	email, err := authBackend.ExtractEmail(request)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	if !settings.IsAdminOrEmployee(email) {
+		util.ErrHandler(errors.New("Not allowed"), writer, http.StatusUnauthorized)
+		return
+	}
+
 	var talks []*model.Talk
-	var err error
 
 	state := request.FormValue("state")
 	if state != "" {
@@ -130,8 +148,22 @@ func (*TalkController) GetTalk(writer http.ResponseWriter, request *http.Request
 		- the role is 2 (employee) and state is not accepted (waiting room)
 
 	if talk.StateValue < talkStateFactory.GetPublishedTalkStateValue() {
-		util.ErrHandler(errors.New("Not allowed"), writer, http.StatusUnauthorized)
-		return
+		authBackend, err := authentication.GetJWTAuthenticationBackend()
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+
+		email, err := authBackend.ExtractEmail(request)
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+
+		if !settings.IsAdminOrEmployee(email) {
+			util.ErrHandler(errors.New("Not allowed"), writer, http.StatusUnauthorized)
+			return
+		}
 	}
 	*/
 
@@ -154,12 +186,43 @@ func (*TalkController) SetTalk(writer http.ResponseWriter, request *http.Request
 		return
 	}
 
-	instance, err := database.GetTalkDatabaseManagerInstance()
+	vars := mux.Vars(request)
+	talkToCreate.TalkID, err = strconv.Atoi(vars["talkID"])
 	if err != nil {
-		log.Println(err)
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
 		return
 	}
+
+	authBackend, err := authentication.GetJWTAuthenticationBackend()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	email, err := authBackend.ExtractEmail(request)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	if !settings.IsAdmin(email) {
+		talk, err := instance.GetTalk(talkToCreate.TalkID)
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusUnauthorized)
+			return
+		}
+		if email != talk.ProponentEmail {
+			util.ErrHandler(errors.New("Not authorized"), writer, http.StatusUnauthorized)
+			return
+		}
+	}
+
 	instance.SetTalk(talkToCreate)
 
 	writer.WriteHeader(http.StatusOK)
@@ -226,19 +289,19 @@ func getTalksWithState(state string) ([]*model.Talk, error) {
 
 	var talks []*model.Talk
 
-	i, err := strconv.ParseInt(state, 10, 8);
+	i, err := strconv.ParseInt(state, 10, 8)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("Invalid state")
 	}
 
-	stateObj, err := talkStateFactory.GetTalkState(uint8(i));
+	stateObj, err := talkStateFactory.GetTalkState(uint8(i))
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("Invalid state")
 	}
 
-	talks, err = instance.GetTalksWithState(stateObj);
+	talks, err = instance.GetTalksWithState(stateObj)
 	if err != nil {
 		log.Println(err)
 		return nil, err

@@ -1,8 +1,9 @@
 package model
 
+//Profile
 type Profile struct {
-	Name string
-	Email string
-	Role uint8
-	Token string
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Role  uint8  `json:"role"`
+	Token string `json:"token"`
 }

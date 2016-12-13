@@ -26,7 +26,7 @@ func Login(requestUser *model.LoginInfo) (*model.Profile, error) {
 		return nil, err
 	}
 
-	token, err := authBackend.GenerateToken(user.UUID)
+	token, err := authBackend.GenerateToken(user.Email)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -43,7 +43,7 @@ func RefreshToken(requestUser *model.User) ([]byte, error) {
 		return nil, err
 	}
 
-	token, err := authBackend.GenerateToken(requestUser.UUID)
+	token, err := authBackend.GenerateToken(requestUser.Email)
 	if err != nil {
 		log.Println(err)
 		return nil, err
