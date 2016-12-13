@@ -16,6 +16,7 @@ import (
 	//"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	"github.com/FEUPTalks/Backend/util"
 	"github.com/gorilla/mux"
+	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 )
 
 //TalkController struct
@@ -225,39 +226,22 @@ func getTalksWithState(state string) ([]*model.Talk, error) {
 
 	var talks []*model.Talk
 
-	switch state {
-	case "1", "proposed":
-		talks, err = instance.GetTalksWithState(&talkState.ProposedTalkState{})
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	case "2", "rejected":
-		talks, err = instance.GetTalksWithState(&talkState.RejectedTalkState{})
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	case "3", "accepted":
-		talks, err = instance.GetTalksWithState(&talkState.AcceptedTalkState{})
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	case "4", "published":
-		talks, err = instance.GetTalksWithState(&talkState.PublishedTalkState{})
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	case "5", "archived":
-		talks, err = instance.GetTalksWithState(&talkState.ArchivedTalkState{})
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	default:
+	i, err := strconv.ParseInt(state, 10, 8);
+	if err != nil {
+		log.Println(err)
 		return nil, errors.New("Invalid state")
+	}
+
+	stateObj, err := talkStateFactory.GetTalkState(uint8(i));
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("Invalid state")
+	}
+
+	talks, err = instance.GetTalksWithState(stateObj);
+	if err != nil {
+		log.Println(err)
+		return nil, err
 	}
 
 	return talks, nil

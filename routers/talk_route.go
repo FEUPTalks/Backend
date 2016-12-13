@@ -38,7 +38,7 @@ func SetTalksRoutes(router *mux.Router) *mux.Router {
 		negroni.New(
 			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
 			negroni.HandlerFunc(talkController.SetTalkRoom),
-		)).Methods("PUT")
+		)).Methods("PUT", "OPTIONS")
 
 	return router
 }
