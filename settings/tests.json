@@ -1,0 +1,5 @@
+{
+  "PrivateKeyPath": "C:/Gospace/src/github.com/FEUPTalks/Backend/settings/keys/private_key",
+  "PublicKeyPath": "C:/Gospace/src/github.com/FEUPTalks/Backend/settings/keys/public_key.pub",
+  "JWTExpirationDelta": 8
+}
