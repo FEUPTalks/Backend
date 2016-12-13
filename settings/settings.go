@@ -8,6 +8,12 @@ import (
 	"path/filepath"
 )
 
+const adminEmail string = "admin@teste.com"
+const employee1Email string = "employee1@teste.com"
+const employee2Email string = "employee2@teste.com"
+
+var emails = [3]string{adminEmail, employee1Email, employee2Email}
+
 var environments = map[string]string{
 	"production":    "settings/prod.json",
 	"preproduction": "settings/pre.json",
@@ -21,17 +27,32 @@ type Settings struct {
 }
 
 func (s Settings) GetPrivateKeyPath() string {
-	absPath, _ := filepath.Abs(s.PrivateKeyPath);
-	return absPath;
+	absPath, _ := filepath.Abs(s.PrivateKeyPath)
+	return absPath
 }
 
 func (s Settings) GetPublicKeyPath() string {
-	absPath, _ := filepath.Abs(s.PublicKeyPath);
-	return absPath;
+	absPath, _ := filepath.Abs(s.PublicKeyPath)
+	return absPath
 }
 
 var settings Settings = Settings{}
 var env = "preproduction"
+
+//IsAdmin
+func IsAdmin(email string) bool {
+	return email == adminEmail
+}
+
+//IsAdminOrEmployee
+func IsAdminOrEmployee(email string) bool {
+	for _, temp := range emails {
+		if temp == email {
+			return true
+		}
+	}
+	return false
+}
 
 func Init() {
 	env = os.Getenv("GO_ENV")

@@ -347,8 +347,6 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		Date=?,
 		DateFlex=?,
 		Duration=?,
-		ProponentName=?,
-		ProponentEmail=?,
 		SpeakerName=?,
 		SpeakerBrief=?,
 		SpeakerAffiliation=?,
@@ -357,8 +355,7 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		HostEmail=?,
 		Snack=?,
 		Room=?,
-		Other=?,
-		State=?
+		Other=?
 	WHERE TalkID=?`)
 
 	if err != nil {
@@ -366,10 +363,9 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		return err
 	}
 
-	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
-		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
+	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration, talk.SpeakerName,
 		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
-		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue(), talk.TalkID)
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.TalkID)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -415,4 +411,45 @@ func (manager *talkDatabaseManager) SetTalkRoom(talkID int, room string) error {
 		return err
 	}
 	return nil
+}
+
+func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) {
+	stmt, err := manager.database.Prepare("insert into picture (filepath) values (?)")
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	result, err := stmt.Exec(filepath)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	return id, nil
+}
+
+//GetPicture
+func (manager *talkDatabaseManager) GetPicture(id string) (string, error) {
+	stmt, err := manager.database.Prepare("select filepath from picture where pictureID = ?")
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	var filepath string
+
+	err = stmt.QueryRow(id).Scan(&filepath)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return filepath, nil
 }
