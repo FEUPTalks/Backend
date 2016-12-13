@@ -132,6 +132,52 @@ values (
     'Outros que tais'
 );
 
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+SpeakerPicture, HostName, HostEmail, Snack, Room, Other, State)
+values (
+    'Test3',
+    'We are testing the talk proposal functionality',
+    '2016-11-07 00:00:00',
+    '5',
+    '3',
+    'proponent2',
+    'proponent2@email.com',
+    'speaker2',
+    'É um ganda gajo',
+    'harvard',
+    '1',
+    'host2@email.com',
+    'host2@email.com',
+    'Rissóis, panados, aguá e sumos naturais',
+    'B219',
+    'Outros que tais',
+    '5'
+);
+
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+SpeakerPicture, HostName, HostEmail, Snack, Room,Other, State)
+values (
+    'Test4',
+    'We are testing the talk proposal functionality',
+    '2016-11-07 00:00:00',
+    '5',
+    '3',
+    'proponent2',
+    'proponent2@email.com',
+    'speaker2',
+    'É um ganda gajo',
+    'harvard',
+    '1',
+    'host2@email.com',
+    'host2@email.com',
+    'Rissóis, panados, aguá e sumos naturais',
+    'B219',
+    'Outros que tais',
+    '5'
+);
+
 insert into user (Email, Name, HashCode, RoleValue)
 values (
     'teste@teste.com',
