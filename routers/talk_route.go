@@ -16,24 +16,29 @@ func SetTalksRoutes(router *mux.Router) *mux.Router {
 
 	talkController := &controllers.TalkController{}
 
-	router.HandleFunc(talkPath, talkController.Index).Methods("GET")
+	router.HandleFunc(talkPath, talkController.Index).Methods("GET", "OPTIONS")
 	router.Handle(talkPath+"/all",
 		negroni.New(
 			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
 			negroni.HandlerFunc(talkController.All),
-		)).Methods("GET")
-	router.HandleFunc(talkPath+"/{talkID:[0-9]+}", talkController.GetTalk).Methods("GET")
+		)).Methods("GET", "OPTIONS")
+	router.HandleFunc(talkPath+"/{talkID:[0-9]+}", talkController.GetTalk).Methods("GET", "OPTIONS")
 	router.Handle(talkPath+"/{talkID:[0-9]+}",
 		negroni.New(
 			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
 			negroni.HandlerFunc(talkController.SetTalk),
-		)).Methods("PUT")
+		)).Methods("PUT", "OPTIONS")
 	router.Handle(talkPath+"/{talkID:[0-9]+}/SetState",
 		negroni.New(
 			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
 			negroni.HandlerFunc(talkController.SetTalkState),
-		)).Methods("PUT")
-	router.HandleFunc(talkPath, talkController.Create).Methods("POST")
+		)).Methods("PUT", "OPTIONS")
+	router.HandleFunc(talkPath, talkController.Create).Methods("POST", "OPTIONS")
+	router.Handle(talkPath+"/{talkID:[0-9]+}/SetRoom",
+		negroni.New(
+			negroni.HandlerFunc(authentication.RequireTokenAuthentication),
+			negroni.HandlerFunc(talkController.SetTalkRoom),
+		)).Methods("PUT", "OPTIONS")
 
 	return router
 }

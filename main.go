@@ -58,6 +58,8 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
+		AllowedHeaders: []string{"Authorization"},
 	})
 
 	router := routers.InitRoutes()

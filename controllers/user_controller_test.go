@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"bytes"
+	/*"bytes"
 	"context"
 	"fmt"
 	"net/http/httptest"
-	"testing"
+	"testing"*/
 )
 
 var (
@@ -13,8 +13,12 @@ var (
 )
 
 /*
-Expect Http Code: 201
- */
+@Deprecated tests
+Reason:
+- UserController no longer creates users
+- This feature was to be implemented in case attendees were required to register
+- This feature was not removed because it can be later used for staff registration, but it's not a requirement
+
 func TestCreateNewUser(t *testing.T) {
 	userController := &UserController{}
 	request := httptest.NewRequest("POST", "/user", bytes.NewReader([]byte(jsonStream)))
@@ -26,9 +30,6 @@ func TestCreateNewUser(t *testing.T) {
 	userController.DeleteLastUser()
 }
 
-/*
-Expect Http Code: 200
- */
 func TestGetUserByID(t *testing.T) {
 	userController := &UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
@@ -42,9 +43,7 @@ func TestGetUserByID(t *testing.T) {
 	fmt.Println(writer.Code)
 }
 
-/*
-Expect Http Code: 200
- */
+
 func TestGetUserByHashCode(t *testing.T) {
 	userController := &UserController{}
 	request := httptest.NewRequest("GET", "/user", nil)
@@ -58,9 +57,7 @@ func TestGetUserByHashCode(t *testing.T) {
 	fmt.Println(writer.Code)
 }
 
-/*
-Expect Http Code: 200
- */
+
 func TestEditUser(t *testing.T) {
 	userController := &UserController{}
 	request := httptest.NewRequest("PUT", "/user", bytes.NewReader([]byte(jsonStream)))
@@ -74,3 +71,4 @@ func TestEditUser(t *testing.T) {
 	userController.SetUser(writer, request)
 	fmt.Println(writer.Code)
 }
+*/
