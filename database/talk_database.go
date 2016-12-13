@@ -299,6 +299,45 @@ func (manager *talkDatabaseManager) SaveTalkRegistrationLog(talkRegistrationLog 
 	return nil
 }
 
+//Returns all of the attendees that are registered in a given talk with ID == talkID
+func (manager *talkDatabaseManager) GetTalkRegistrationLogsWithTalkID(talkID int) ([]*model.TalkRegistrationLog, error) {
+	talkRegistrationLogs := make([]*model.TalkRegistrationLog, 0)
+	stmt, err := manager.database.Prepare("select * from talkRegistrationLog where talkID = ?")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(talkID)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var talkRegistrationLog = model.NewTalkRegistrationLog()
+		err = rows.Scan(&talkRegistrationLog.LogID, &talkRegistrationLog.Name, &talkRegistrationLog.Email,
+			&talkRegistrationLog.TalkID, &talkRegistrationLog.IsAttendingSnack, &talkRegistrationLog.WantsToReceiveNotifications,
+			&talkRegistrationLog.TransactionType, &talkRegistrationLog.TransactionDate)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		talkRegistrationLogs = append(talkRegistrationLogs, talkRegistrationLog)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return talkRegistrationLogs, nil
+}
+
 //SetTalk
 func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`

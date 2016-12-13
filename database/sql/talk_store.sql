@@ -55,9 +55,9 @@ create table talkRegistration (
 
 create table talkRegistrationLog (
   LogID int unsigned not null auto_increment primary key,
+  Name varchar(255) not null,
   Email varchar(50) not null,
   TalkID int unsigned not null,
-  Name varchar(255) not null,
   IsAttendingSnack boolean,
   WantsToReceiveNotifications boolean,
   TransactionType tinyint unsigned default 0,
