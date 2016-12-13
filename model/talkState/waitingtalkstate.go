@@ -6,5 +6,5 @@ type WaitingTalkState struct {
 
 //Handle implementation TalkState interface
 func (*WaitingTalkState) Handle() uint8 {
-	return 6
+	return 4
 }
