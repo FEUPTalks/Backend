@@ -35,7 +35,7 @@ func (*TalkRegistrationController) Create(writer http.ResponseWriter, request *h
 		return
 	}
 
-	talkRegistrationLogToCreate := model.NewTalkRegistrationLog(talkRegistrationToCreate, 0)
+	talkRegistrationLogToCreate := model.NewTalkRegistrationLogWithTalkRegistration(talkRegistrationToCreate, 0)
 
 	instance.SaveTalkRegistration(talkRegistrationToCreate)
 	instance.SaveTalkRegistrationLog(talkRegistrationLogToCreate)

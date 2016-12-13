@@ -299,6 +299,45 @@ func (manager *talkDatabaseManager) SaveTalkRegistrationLog(talkRegistrationLog 
 	return nil
 }
 
+//Returns all of the attendees that are registered in a given talk with ID == talkID
+func (manager *talkDatabaseManager) GetTalkRegistrationLogsWithTalkID(talkID int) ([]*model.TalkRegistrationLog, error) {
+	talkRegistrationLogs := make([]*model.TalkRegistrationLog, 0)
+	stmt, err := manager.database.Prepare("select * from talkRegistrationLog where talkID = ?")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(talkID)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var talkRegistrationLog = model.NewTalkRegistrationLog()
+		err = rows.Scan(&talkRegistrationLog.LogID, &talkRegistrationLog.Name, &talkRegistrationLog.Email,
+			&talkRegistrationLog.TalkID, &talkRegistrationLog.IsAttendingSnack, &talkRegistrationLog.WantsToReceiveNotifications,
+			&talkRegistrationLog.TransactionType, &talkRegistrationLog.TransactionDate)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		talkRegistrationLogs = append(talkRegistrationLogs, talkRegistrationLog)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return talkRegistrationLogs, nil
+}
+
 //SetTalk
 func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`
@@ -308,8 +347,6 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		Date=?,
 		DateFlex=?,
 		Duration=?,
-		ProponentName=?,
-		ProponentEmail=?,
 		SpeakerName=?,
 		SpeakerBrief=?,
 		SpeakerAffiliation=?,
@@ -318,8 +355,7 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		HostEmail=?,
 		Snack=?,
 		Room=?,
-		Other=?,
-		State=?
+		Other=?
 	WHERE TalkID=?`)
 
 	if err != nil {
@@ -327,10 +363,9 @@ func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 		return err
 	}
 
-	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration,
-		talk.ProponentName, talk.ProponentEmail, talk.SpeakerName,
+	_, err = stmt.Exec(talk.Title, talk.Summary, talk.Date, talk.DateFlex, talk.Duration, talk.SpeakerName,
 		talk.SpeakerBrief, talk.SpeakerAffiliation, talk.SpeakerPicture,
-		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.GetStateValue(), talk.TalkID)
+		talk.HostName, talk.HostEmail, talk.Snack, talk.Room, talk.Other, talk.TalkID)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -376,4 +411,45 @@ func (manager *talkDatabaseManager) SetTalkRoom(talkID int, room string) error {
 		return err
 	}
 	return nil
+}
+
+func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) {
+	stmt, err := manager.database.Prepare("insert into picture (filepath) values (?)")
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	result, err := stmt.Exec(filepath)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	return id, nil
+}
+
+//GetPicture
+func (manager *talkDatabaseManager) GetPicture(id string) (string, error) {
+	stmt, err := manager.database.Prepare("select filepath from picture where pictureID = ?")
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	var filepath string
+
+	err = stmt.QueryRow(id).Scan(&filepath)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return filepath, nil
 }

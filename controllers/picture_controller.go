@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"image/png"
 	"io/ioutil"
 	"net/http"
@@ -12,8 +14,9 @@ import (
 
 	"strings"
 
+	"github.com/FEUPTalks/Backend/database"
+	"github.com/FEUPTalks/Backend/model"
 	"github.com/FEUPTalks/Backend/util"
-	"log"
 )
 
 const (
@@ -47,7 +50,7 @@ func okContentType(fileType string) bool {
 
 //Upload upload files to the server
 func (*PictureController) Upload(writer http.ResponseWriter, request *http.Request) {
-	file, info, err := request.FormFile("picture")
+	/*file, info, err := request.FormFile("picture")
 
 	log.Println(request.FormFile("picture"));
 
@@ -63,14 +66,23 @@ func (*PictureController) Upload(writer http.ResponseWriter, request *http.Reque
 	if !okContentType(contentType) {
 		util.ErrHandler(errors.New("Invalid file type. Use jpeg or png"), writer, http.StatusUnsupportedMediaType)
 		return
-	}
+	}*/
 
-	buffer, err := ioutil.ReadAll(file)
-
+	pictureDTO := model.PictureDTO{}
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&pictureDTO)
 	if err != nil {
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
 		return
 	}
+
+	sEnc, err := base64.StdEncoding.DecodeString(pictureDTO.Picture)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	buffer := []byte(sEnc)
 
 	_, _, err = image.Decode(bytes.NewReader(buffer))
 	if err != nil {
@@ -78,7 +90,7 @@ func (*PictureController) Upload(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	filename, err := getFileName(request.FormValue("speakerName"))
+	filename, err := getFileName(pictureDTO.SpeakerName)
 	if err != nil {
 		util.ErrHandler(err, writer, http.StatusInternalServerError)
 		return
@@ -91,14 +103,38 @@ func (*PictureController) Upload(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	writer.WriteHeader(http.StatusCreated)
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	id, err := instance.SavePicture(filename)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	util.SendJSON(writer, request, id, http.StatusCreated)
 }
 
 //Download download files from the server
 func (*PictureController) Download(writer http.ResponseWriter, request *http.Request) {
-	filename := ""
+	id := request.FormValue("pictureID")
+	if id == "" {
+		util.ErrHandler(errors.New("Picture not found"), writer, http.StatusNotFound)
+		return
+	}
 
-	buffer, err := ioutil.ReadFile(filename)
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusNotFound)
+		return
+	}
+
+	filepath, err := instance.GetPicture(id)
+
+	buffer, err := ioutil.ReadFile(filepath)
 
 	if err != nil {
 		util.ErrHandler(err, writer, http.StatusInternalServerError)

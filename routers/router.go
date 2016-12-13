@@ -9,5 +9,7 @@ func InitRoutes() *mux.Router {
 	router = SetTalksRoutes(router)
 	router = SetPictureRoutes(router)
 	router = SetTalkRegistrationRoutes(router)
+	router = SetTalkRegistrationLogRoutes(router)
+
 	return router
 }

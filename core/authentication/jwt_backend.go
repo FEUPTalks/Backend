@@ -6,6 +6,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
+	"net/http"
 	"os"
 	"sync"
 	"time"
@@ -20,7 +22,7 @@ import (
 	"github.com/FEUPTalks/Backend/model"
 	"github.com/FEUPTalks/Backend/settings"
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
+	req "github.com/dgrijalva/jwt-go/request"
 )
 
 type jwtAuthenticationBackend struct {
@@ -62,12 +64,12 @@ func GetJWTAuthenticationBackend() (*jwtAuthenticationBackend, error) {
 	return nil, errors.New("Unable to set private and public keys")
 }
 
-func (backend *jwtAuthenticationBackend) GenerateToken(userUUID uuid.UUID) (string, error) {
+func (backend *jwtAuthenticationBackend) GenerateToken(email string) (string, error) {
 	token := jwt.New(jwt.SigningMethodRS512)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(settings.Get().JWTExpirationDelta)).Unix()
 	claims["iat"] = time.Now().Unix()
-	claims["sub"] = userUUID
+	claims["sub"] = email
 	tokenString, err := token.SignedString(backend.privateKey)
 	if err != nil {
 		log.Println(err)
@@ -75,6 +77,28 @@ func (backend *jwtAuthenticationBackend) GenerateToken(userUUID uuid.UUID) (stri
 	}
 
 	return tokenString, nil
+}
+
+//GetTokenClaim
+func (backend *jwtAuthenticationBackend) GetTokenClaim(tokenString, claim string) (string, error) {
+	token, err := jwt.Parse(tokenString,
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			}
+			return authBackendInstance.PublicKey, nil
+		})
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	assertion, ok := token.Claims.(jwt.MapClaims)[claim].(string)
+	if !ok {
+		errMsg := "No token claim with value " + claim + " available"
+		log.Println(errMsg)
+		return "", errors.New(errMsg)
+	}
+	return assertion, nil
 }
 
 func (backend *jwtAuthenticationBackend) Authenticate(user *model.LoginInfo) (*model.User, error) {
@@ -114,6 +138,23 @@ func (backend *jwtAuthenticationBackend) getTokenRemainingValidity(timestamp int
 	return expireOffset
 }
 
+func (backend *jwtAuthenticationBackend) ExtractEmail(request *http.Request) (string, error) {
+
+	token, err := req.AuthorizationHeaderExtractor.ExtractToken(request)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	email, err := backend.GetTokenClaim(token, "sub")
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return email, nil
+}
+
 func (backend *jwtAuthenticationBackend) Logout(tokenString string, token *jwt.Token) error {
 	/* redisConn := redis.Connect()
 	return redisConn.SetValue(tokenString, tokenString, backend.getTokenRemainingValidity(token.Claims["exp"])) */
@@ -121,7 +162,7 @@ func (backend *jwtAuthenticationBackend) Logout(tokenString string, token *jwt.T
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
-	privateKeyFile, err := os.Open(settings.Get().GetPrivateKeyPath());
+	privateKeyFile, err := os.Open(settings.Get().GetPrivateKeyPath())
 	if err != nil {
 		log.Println(err)
 		return nil, err
