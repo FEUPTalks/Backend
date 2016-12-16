@@ -586,22 +586,22 @@ func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) 
 }
 
 //GetPicture
-func (manager *talkDatabaseManager) GetPicture(id string) (string, error) {
-	stmt, err := manager.database.Prepare("select filepath from picture where pictureID = ?")
+func (manager *talkDatabaseManager) GetPictureByTalkID(id string) (string, error) {
+	stmt, err := manager.database.Prepare("select speakerpicture from picture where pictureID IN (select speakerPicture from talk where talkID=?)")
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	var filepath string
+	var picture string
 
-	err = stmt.QueryRow(id).Scan(&filepath)
+	err = stmt.QueryRow(id).Scan(&picture)
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	return filepath, nil
+	return picture, nil
 }
 
 //DeleteLastTalk delete talk created in tests
