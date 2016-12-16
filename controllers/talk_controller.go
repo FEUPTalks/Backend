@@ -309,3 +309,28 @@ func getTalksWithState(state string) ([]*model.Talk, error) {
 
 	return talks, nil
 }
+
+//DeleteLastTalk delete user created in tests
+func (*TalkController) DeleteLastTalk() {
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	instance.DeleteLastTalk()
+}
+
+//GetLastTalkID delete user created in tests
+func (*TalkController) GetLastTalkID() int {
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		return -1
+	}
+	id, err := instance.GetLastTalkID()
+	if err != nil {
+		log.Println(err)
+		return -1
+	}
+	return id
+}

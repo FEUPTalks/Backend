@@ -453,3 +453,43 @@ func (manager *talkDatabaseManager) GetPicture(id string) (string, error) {
 
 	return filepath, nil
 }
+
+//DeleteLastTalk delete talk created in tests
+func (manager *talkDatabaseManager) DeleteLastTalk() error {
+	stmt, err := manager.database.Prepare(`DELETE FROM talk ORDER BY TalkID DESC LIMIT 1`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+//GetLastTalkID delete user created in tests
+func (manager *talkDatabaseManager) GetLastTalkID() (int, error) {
+	rows, err := manager.database.Query(`SELECT MAX(TalkID) FROM talk`, 1)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+	var id int
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(id)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id, err
+}
