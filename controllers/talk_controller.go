@@ -277,7 +277,7 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		editURL := url.URL{}
 
 		editURL.Scheme = "http"
-		editURL.Host = "les16b.fe.up.pt:8144"
+		editURL.Host = "les16b.fe.up.pt"
 		editURL.Path = "talks/edit/" + strconv.Itoa(talk.TalkID)
 		editURL.RawQuery = "token=" + token
 
