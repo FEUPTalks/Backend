@@ -10,11 +10,11 @@ import (
 
 	"github.com/FEUPTalks/Backend/model"
 
-	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
-
 	"github.com/FEUPTalks/Backend/model/talkState"
 	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
+	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
 //TalkDatabaseManager used to manage the talk_store
@@ -247,6 +247,93 @@ func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) (
 	return talkRegistrations, nil
 }
 
+func (manager *talkDatabaseManager) GetTemporaryTalkRegistrationsWithTalkID(talkID int) ([]*model.TalkRegistration, error) {
+	talkRegistrations := make([]*model.TalkRegistration, 0)
+	stmt, err := manager.database.Prepare("select * from temporaryTalkRegistration where talkID = ?")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(talkID)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var talkRegistration = model.NewTalkRegistration()
+		err = rows.Scan(&talkRegistration.Email, &talkRegistration.TalkID, &talkRegistration.Name,
+			&talkRegistration.IsAttendingSnack, &talkRegistration.WantsToReceiveNotifications)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		talkRegistrations = append(talkRegistrations, talkRegistration)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return talkRegistrations, nil
+}
+
+func (manager *talkDatabaseManager) EditTalkRegistration(talkID int, email string, talkRegistration *model.TalkRegistration) error {
+	stmt, err := manager.database.Prepare(
+		`update talkRegistration set
+			Name=?,
+			IsAttendingSnack=?,
+			WantsToReceiveNotifications=? where talkID=? and email=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(talkRegistration.Name, talkRegistration.IsAttendingSnack,
+		talkRegistration.WantsToReceiveNotifications, talkRegistration.TalkID, talkRegistration.Email)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = deleteTemporaryTalkRegistration(talkID, email)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func deleteTemporaryTalkRegistration(talkID int, email string) error {
+	stmt, err := instance.database.Prepare(`delete from temporaryTalkRegistration where email=? and talkID=?`)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	result, err := stmt.Exec(email, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model.TalkRegistration) error {
 	stmt, err := manager.database.Prepare(
 		`insert into talkRegistration (
@@ -338,6 +425,51 @@ func (manager *talkDatabaseManager) GetTalkRegistrationLogsWithTalkID(talkID int
 	return talkRegistrationLogs, nil
 }
 
+//CheckIfRegistrationExistsInTalk
+func (manager *talkDatabaseManager) CheckIfRegistrationExistsInTalk(email string, talkID int) (bool, error) {
+
+	stmt, err := manager.database.Prepare("select * from talkregistration where email=? and talkID=?")
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	talkRegistration := model.TalkRegistration{}
+
+	err = stmt.QueryRow(email, talkID).Scan(&talkRegistration.Email, &talkRegistration.TalkID, &talkRegistration.Name,
+		&talkRegistration.IsAttendingSnack, &talkRegistration.WantsToReceiveNotifications)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	return true, err
+}
+
+func (manager *talkDatabaseManager) CreateTemporaryTalkRegistrationChange(temporaryTalkRegistrationChange *model.TalkRegistration) error {
+	stmt, err := manager.database.Prepare(
+		`insert into temporaryTalkRegistration (
+			Email,
+			TalkID,
+			Name,
+			IsAttendingSnack,
+			WantsToReceiveNotifications) values (?,?,?,?,?)`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(temporaryTalkRegistrationChange.Email, temporaryTalkRegistrationChange.TalkID,
+		temporaryTalkRegistrationChange.Name, temporaryTalkRegistrationChange.IsAttendingSnack, temporaryTalkRegistrationChange.WantsToReceiveNotifications)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 //SetTalk
 func (manager *talkDatabaseManager) SetTalk(talk *model.Talk) error {
 	stmt, err := manager.database.Prepare(`
@@ -413,6 +545,24 @@ func (manager *talkDatabaseManager) SetTalkRoom(talkID int, room string) error {
 	return nil
 }
 
+func (manager *talkDatabaseManager) SetTalkOther(talkID int, other string) error {
+	stmt, err := manager.database.Prepare(`
+	UPDATE Talk SET
+		Other=?
+	WHERE TalkID=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(other, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
 func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) {
 	stmt, err := manager.database.Prepare("insert into picture (filepath) values (?)")
 	if err != nil {
@@ -436,20 +586,85 @@ func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) 
 }
 
 //GetPicture
-func (manager *talkDatabaseManager) GetPicture(id string) (string, error) {
-	stmt, err := manager.database.Prepare("select filepath from picture where pictureID = ?")
+func (manager *talkDatabaseManager) GetPictureByTalkID(id string) (string, error) {
+	stmt, err := manager.database.Prepare("select speakerpicture from picture where pictureID IN (select speakerPicture from talk where talkID=?)")
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	var filepath string
+	var picture string
 
-	err = stmt.QueryRow(id).Scan(&filepath)
+	err = stmt.QueryRow(id).Scan(&picture)
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	return filepath, nil
+	return picture, nil
+}
+
+//DeleteLastTalk delete talk created in tests
+func (manager *talkDatabaseManager) DeleteLastTalk() error {
+	stmt, err := manager.database.Prepare(`DELETE FROM talk ORDER BY TalkID DESC LIMIT 1`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+//GetLastTalkID delete user created in tests
+func (manager *talkDatabaseManager) GetLastTalkID() (int, error) {
+	rows, err := manager.database.Query(`SELECT MAX(TalkID) FROM talk`, 1)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+	var id int
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(id)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id, err
+}
+
+// Expire talks which already happened
+func (manager *talkDatabaseManager) ExpireTalks() {
+	talks, err := instance.GetAllTalks()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	expire_time := time.Now().Add(24 * time.Hour).Local()
+
+	for _,element := range talks {
+		if element.StateValue != talkStateFactory.GetArchivedTalkStateValue() &&
+			element.StateValue == talkStateFactory.GetPublishedTalkStateValue() {
+			if !inTimeSpan(expire_time, element.Date) {
+				instance.SetTalkState(element.TalkID, 6);
+				log.Println("Expiring talk ", element.TalkID);
+			}
+		}
+	}
+}
+
+func inTimeSpan(end, check time.Time) bool {
+	return check.After(end)
 }

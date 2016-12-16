@@ -16,11 +16,11 @@ func GetTalkState(state uint8) (talkState.TalkState, error) {
 	case 3:
 		return &talkState.AcceptedTalkState{}, nil
 	case 4:
-		return &talkState.PublishedTalkState{}, nil
-	case 5:
-		return &talkState.ArchivedTalkState{}, nil
-	case 6:
 		return &talkState.WaitingTalkState{}, nil
+	case 5:
+		return &talkState.PublishedTalkState{}, nil
+	case 6:
+		return &talkState.ArchivedTalkState{}, nil
 	default:
 		return nil, errors.New("Requested state not available")
 	}

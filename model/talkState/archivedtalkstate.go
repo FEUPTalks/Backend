@@ -6,5 +6,5 @@ type ArchivedTalkState struct {
 
 //Handle implementation TalkState interface
 func (*ArchivedTalkState) Handle() uint8 {
-	return 5
+	return 6
 }

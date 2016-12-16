@@ -6,5 +6,5 @@ type RejectedTalkState struct {
 
 //Handle implementation TalkState interface
 func (*RejectedTalkState) Handle() uint8 {
-	return 6
+	return 2
 }

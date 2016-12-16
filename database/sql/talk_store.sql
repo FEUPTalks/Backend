@@ -19,8 +19,8 @@ create database talk_store character set utf8;
 use talk_store;
 
 create table picture (
-    PictureID int unsigned not null auto_increment primary key,
-    filepath varchar(200) not null
+    pictureID int unsigned not null auto_increment primary key,
+    speakerpicture longtext not null
 ) ENGINE=InnoDB;
 
 create table talk (
@@ -35,7 +35,7 @@ create table talk (
     SpeakerName varchar(50) not null,
     SpeakerBrief varchar(50) not null,
     SpeakerAffiliation varchar(50) not null,
-    SpeakerPicture int unsigned not null,
+    SpeakerPicture int unsigned,
     HostName varchar(50) not null,
     HostEmail varchar(50) not null,
     Snack tinyint not null,
@@ -45,6 +45,15 @@ create table talk (
 ) ENGINE=InnoDB;
 
 create table talkRegistration (
+  Email varchar(50) not null,
+  TalkID int unsigned not null,
+  primary key(TalkID, Email),
+  Name varchar(255) not null,
+  IsAttendingSnack boolean,
+  WantsToReceiveNotifications boolean
+) ENGINE=InnoDB;
+
+create table temporaryTalkRegistration (
   Email varchar(50) not null,
   TalkID int unsigned not null,
   primary key(TalkID, Email),
@@ -74,7 +83,7 @@ create table user (
 
 alter table talk
 add foreign key (SpeakerPicture)
-references picture(PictureID);
+references picture(pictureID);
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
@@ -82,11 +91,6 @@ add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitia
 alter table talkRegistration
 add foreign key (TalkID)
 references talk(TalkID);
-
-insert into picture (filepath)
-values (
-    'test'
-);
 
 insert into talk (Title, Summary, Date, DateFlex,
 Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
@@ -102,12 +106,12 @@ values (
     'speaker',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host@email.com',
+    'host@email.com',
     '1',
-    'host@email.com',
-    'host@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais'
+    'Rissóis, panados, aguá e sumos naturais'
 );
 
 insert into talk (Title, Summary, Date, DateFlex,
@@ -124,12 +128,58 @@ values (
     'speaker2',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
     '1',
-    'host2@email.com',
-    'host2@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais'
+    'Rissóis, panados, aguá e sumos naturais'
+);
+
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+SpeakerPicture, HostName, HostEmail, Snack, Room, Other, State)
+values (
+    'Test3',
+    'We are testing the talk proposal functionality',
+    '2016-11-07 00:00:00',
+    '5',
+    '3',
+    'proponent2',
+    'proponent2@email.com',
+    'speaker2',
+    'É um ganda gajo',
+    'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
+    '1',
+    'B219',
+    'Rissóis, panados, aguá e sumos naturais',
+    '5'
+);
+
+insert into talk (Title, Summary, Date, DateFlex,
+Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
+SpeakerPicture, HostName, HostEmail, Snack, Room,Other, State)
+values (
+    'Test4',
+    'We are testing the talk proposal functionality',
+    '2016-11-07 00:00:00',
+    '5',
+    '3',
+    'proponent2',
+    'proponent2@email.com',
+    'speaker2',
+    'É um ganda gajo',
+    'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
+    '1',
+    'B219',
+    'Rissóis, panados, aguá e sumos naturais',
+    '5'
 );
 
 insert into user (Email, Name, HashCode, RoleValue)
