@@ -544,6 +544,24 @@ func (manager *talkDatabaseManager) SetTalkRoom(talkID int, room string) error {
 	return nil
 }
 
+func (manager *talkDatabaseManager) SetTalkOther(talkID int, other string) error {
+	stmt, err := manager.database.Prepare(`
+	UPDATE Talk SET
+		Other=?
+	WHERE TalkID=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(other, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
 func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) {
 	stmt, err := manager.database.Prepare("insert into picture (filepath) values (?)")
 	if err != nil {
