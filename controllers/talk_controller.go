@@ -318,6 +318,29 @@ func (*TalkController) SetTalkRoom(writer http.ResponseWriter, request *http.Req
 	writer.WriteHeader(http.StatusOK)
 }
 
+//SetTalkOther update database talk input other statement to change
+func (*TalkController) SetTalkOther(writer http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
+	log.Println("SetTalkRoom")
+	vars := mux.Vars(request)
+	talkID, err := strconv.Atoi(vars["talkID"])
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+	other := request.URL.Query().Get("other")
+	if other == "" {
+		http.Error(writer, "other=null", http.StatusInternalServerError)
+		return
+	}
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	instance.SetTalkOther(talkID, other)
+	writer.WriteHeader(http.StatusOK)
+}
 func getTalksWithState(state string) ([]*model.Talk, error) {
 	instance, err := database.GetTalkDatabaseManagerInstance()
 	if err != nil {
