@@ -6,5 +6,5 @@ type PublishedTalkState struct {
 
 //Handle implementation TalkState interface
 func (*PublishedTalkState) Handle() uint8 {
-	return 5
+	return 4
 }
