@@ -19,8 +19,8 @@ create database talk_store character set utf8;
 use talk_store;
 
 create table picture (
-    PictureID int unsigned not null auto_increment primary key,
-    filepath varchar(200) not null
+    pictureID int unsigned not null auto_increment primary key,
+    speakerpicture longtext not null
 ) ENGINE=InnoDB;
 
 create table talk (
@@ -81,9 +81,9 @@ create table user (
     RoleValue tinyint unsigned default 3
 ) ENGINE=InnoDB;
 
-/*alter table talk
+alter table talk
 add foreign key (SpeakerPicture)
-references picture(PictureID);*/
+references picture(PictureID);
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
