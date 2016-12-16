@@ -35,7 +35,7 @@ create table talk (
     SpeakerName varchar(50) not null,
     SpeakerBrief varchar(50) not null,
     SpeakerAffiliation varchar(50) not null,
-    SpeakerPicture longtext,
+    SpeakerPicture int unsigned,
     HostName varchar(50) not null,
     HostEmail varchar(50) not null,
     Snack tinyint not null,
@@ -83,7 +83,7 @@ create table user (
 
 alter table talk
 add foreign key (SpeakerPicture)
-references picture(PictureID);
+references picture(pictureID);
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);
@@ -91,11 +91,6 @@ add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitia
 alter table talkRegistration
 add foreign key (TalkID)
 references talk(TalkID);
-
-insert into picture (filepath)
-values (
-    'test'
-);
 
 insert into talk (Title, Summary, Date, DateFlex,
 Duration, ProponentName, ProponentEmail, SpeakerName, SpeakerBrief, SpeakerAffiliation,
@@ -111,12 +106,12 @@ values (
     'speaker',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host@email.com',
+    'host@email.com',
     '1',
-    'host@email.com',
-    'host@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais'
+    'Rissóis, panados, aguá e sumos naturais'
 );
 
 insert into talk (Title, Summary, Date, DateFlex,
@@ -133,12 +128,12 @@ values (
     'speaker2',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
     '1',
-    'host2@email.com',
-    'host2@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais'
+    'Rissóis, panados, aguá e sumos naturais'
 );
 
 insert into talk (Title, Summary, Date, DateFlex,
@@ -155,12 +150,12 @@ values (
     'speaker2',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
     '1',
-    'host2@email.com',
-    'host2@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais',
+    'Rissóis, panados, aguá e sumos naturais',
     '5'
 );
 
@@ -178,12 +173,12 @@ values (
     'speaker2',
     'É um ganda gajo',
     'harvard',
+    null,
+    'host2@email.com',
+    'host2@email.com',
     '1',
-    'host2@email.com',
-    'host2@email.com',
-    'Rissóis, panados, aguá e sumos naturais',
     'B219',
-    'Outros que tais',
+    'Rissóis, panados, aguá e sumos naturais',
     '5'
 );
 
