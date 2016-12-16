@@ -15,6 +15,7 @@ import (
 	"github.com/FEUPTalks/Backend/model/talkState"
 	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
 //TalkDatabaseManager used to manage the talk_store
@@ -492,4 +493,29 @@ func (manager *talkDatabaseManager) GetLastTalkID() (int, error) {
 		log.Fatal(err)
 	}
 	return id, err
+}
+
+// Expire talks which already happened
+func (manager *talkDatabaseManager) ExpireTalks() {
+	talks, err := instance.GetAllTalks()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	expire_time := time.Now().Add(24 * time.Hour).Local()
+
+	for _,element := range talks {
+		if element.StateValue != talkStateFactory.GetArchivedTalkStateValue() &&
+			element.StateValue == talkStateFactory.GetPublishedTalkStateValue() {
+			if !inTimeSpan(expire_time, element.Date) {
+				instance.SetTalkState(element.TalkID, 6);
+				log.Println("Expiring talk ", element.TalkID);
+			}
+		}
+	}
+}
+
+func inTimeSpan(end, check time.Time) bool {
+	return check.After(end)
 }

@@ -56,6 +56,8 @@ func main() {
 		return
 	}
 
+	talkInstance.ExpireTalks()
+
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
