@@ -35,7 +35,7 @@ create table talk (
     SpeakerName varchar(50) not null,
     SpeakerBrief varchar(50) not null,
     SpeakerAffiliation varchar(50) not null,
-    SpeakerPicture int unsigned not null,
+    SpeakerPicture longtext,
     HostName varchar(50) not null,
     HostEmail varchar(50) not null,
     Snack tinyint not null,
@@ -45,6 +45,15 @@ create table talk (
 ) ENGINE=InnoDB;
 
 create table talkRegistration (
+  Email varchar(50) not null,
+  TalkID int unsigned not null,
+  primary key(TalkID, Email),
+  Name varchar(255) not null,
+  IsAttendingSnack boolean,
+  WantsToReceiveNotifications boolean
+) ENGINE=InnoDB;
+
+create table temporaryTalkRegistration (
   Email varchar(50) not null,
   TalkID int unsigned not null,
   primary key(TalkID, Email),
@@ -72,9 +81,9 @@ create table user (
     RoleValue tinyint unsigned default 3
 ) ENGINE=InnoDB;
 
-alter table talk
+/*alter table talk
 add foreign key (SpeakerPicture)
-references picture(PictureID);
+references picture(PictureID);*/
 
 alter table talk
 add constraint chk_proposedDates check (datediff(ProposedEndDate, ProposedInitialDate) >= 0);

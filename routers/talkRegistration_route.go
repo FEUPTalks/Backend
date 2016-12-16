@@ -14,6 +14,7 @@ func SetTalkRegistrationRoutes(router *mux.Router) *mux.Router {
 
 	talkRegistrationController := &controllers.TalkRegistrationController{}
 
+	router.HandleFunc(talkRegistrationPath+"/{talkID:[0-9]+}/confirm", talkRegistrationController.ConfirmTalkRegistrationChange).Methods("GET")
 	router.HandleFunc(talkRegistrationPath, talkRegistrationController.Create).Methods("POST")
 	router.HandleFunc(talkRegistrationPath+"/{talkID:[0-9]+}", talkRegistrationController.GetTalkRegistrationsWithTalkID).Methods("GET")
 
