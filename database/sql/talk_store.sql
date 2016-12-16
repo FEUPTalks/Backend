@@ -53,6 +53,15 @@ create table talkRegistration (
   WantsToReceiveNotifications boolean
 ) ENGINE=InnoDB;
 
+create table temporaryTalkRegistration (
+  Email varchar(50) not null,
+  TalkID int unsigned not null,
+  primary key(TalkID, Email),
+  Name varchar(255) not null,
+  IsAttendingSnack boolean,
+  WantsToReceiveNotifications boolean
+) ENGINE=InnoDB;
+
 create table talkRegistrationLog (
   LogID int unsigned not null auto_increment primary key,
   Name varchar(255) not null,

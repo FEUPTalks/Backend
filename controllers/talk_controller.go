@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"net/url"
 
 	"encoding/json"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/FEUPTalks/Backend/database"
 	"github.com/FEUPTalks/Backend/model"
 	"github.com/FEUPTalks/Backend/model/talkState"
+	"github.com/FEUPTalks/Backend/services"
 	"github.com/FEUPTalks/Backend/settings"
 	//"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
 	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
@@ -252,6 +254,42 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	talk, err := instance.GetTalk(talkID)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	if newState == 2 {
+		authBackend, err := authentication.GetJWTAuthenticationBackend()
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+
+		token, err := authBackend.GenerateToken(talk.ProponentEmail)
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+
+		editURL := url.URL{}
+
+		editURL.Scheme = "http"
+		editURL.Host = "les16b.fe.up.pt:8144"
+		editURL.Path = "talks/edit/" + strconv.Itoa(talk.TalkID)
+		editURL.RawQuery = "token=" + token
+
+		email := &model.Email{talk.ProponentEmail, talk.ProponentName, editURL.String()}
+
+		err = services.SendEmailConfirmation(email)
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+	}
+
 	instance.SetTalkState(talkID, newState)
 	writer.WriteHeader(http.StatusOK)
 }

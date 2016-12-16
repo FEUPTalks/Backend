@@ -10,10 +10,9 @@ import (
 
 	"github.com/FEUPTalks/Backend/model"
 
-	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
-
 	"github.com/FEUPTalks/Backend/model/talkState"
 	"github.com/FEUPTalks/Backend/model/talkState/talkStateFactory"
+	//loading the driver anonymously, aliasing its package qualifier to so none of its exported names are visible to our code
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -247,6 +246,93 @@ func (manager *talkDatabaseManager) GetTalkRegistrationsWithTalkID(talkID int) (
 	return talkRegistrations, nil
 }
 
+func (manager *talkDatabaseManager) GetTemporaryTalkRegistrationsWithTalkID(talkID int) ([]*model.TalkRegistration, error) {
+	talkRegistrations := make([]*model.TalkRegistration, 0)
+	stmt, err := manager.database.Prepare("select * from temporaryTalkRegistration where talkID = ?")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(talkID)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var talkRegistration = model.NewTalkRegistration()
+		err = rows.Scan(&talkRegistration.Email, &talkRegistration.TalkID, &talkRegistration.Name,
+			&talkRegistration.IsAttendingSnack, &talkRegistration.WantsToReceiveNotifications)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		talkRegistrations = append(talkRegistrations, talkRegistration)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return talkRegistrations, nil
+}
+
+func (manager *talkDatabaseManager) EditTalkRegistration(talkID int, email string, talkRegistration *model.TalkRegistration) error {
+	stmt, err := manager.database.Prepare(
+		`update talkRegistration set
+			Name=?,
+			IsAttendingSnack=?,
+			WantsToReceiveNotifications=? where talkID=? and email=?`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(talkRegistration.Name, talkRegistration.IsAttendingSnack,
+		talkRegistration.WantsToReceiveNotifications, talkRegistration.TalkID, talkRegistration.Email)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = deleteTemporaryTalkRegistration(talkID, email)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func deleteTemporaryTalkRegistration(talkID int, email string) error {
+	stmt, err := instance.database.Prepare(`delete from temporaryTalkRegistration where email=? and talkID=?`)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	result, err := stmt.Exec(email, talkID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 func (manager *talkDatabaseManager) SaveTalkRegistration(talkRegistration *model.TalkRegistration) error {
 	stmt, err := manager.database.Prepare(
 		`insert into talkRegistration (
@@ -336,6 +422,51 @@ func (manager *talkDatabaseManager) GetTalkRegistrationLogsWithTalkID(talkID int
 	}
 
 	return talkRegistrationLogs, nil
+}
+
+//CheckIfRegistrationExistsInTalk
+func (manager *talkDatabaseManager) CheckIfRegistrationExistsInTalk(email string, talkID int) (bool, error) {
+
+	stmt, err := manager.database.Prepare("select * from talkregistration where email=? and talkID=?")
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	talkRegistration := model.TalkRegistration{}
+
+	err = stmt.QueryRow(email, talkID).Scan(&talkRegistration.Email, &talkRegistration.TalkID, &talkRegistration.Name,
+		&talkRegistration.IsAttendingSnack, &talkRegistration.WantsToReceiveNotifications)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	return true, err
+}
+
+func (manager *talkDatabaseManager) CreateTemporaryTalkRegistrationChange(temporaryTalkRegistrationChange *model.TalkRegistration) error {
+	stmt, err := manager.database.Prepare(
+		`insert into temporaryTalkRegistration (
+			Email,
+			TalkID,
+			Name,
+			IsAttendingSnack,
+			WantsToReceiveNotifications) values (?,?,?,?,?)`)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = stmt.Exec(temporaryTalkRegistrationChange.Email, temporaryTalkRegistrationChange.TalkID,
+		temporaryTalkRegistrationChange.Name, temporaryTalkRegistrationChange.IsAttendingSnack, temporaryTalkRegistrationChange.WantsToReceiveNotifications)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
 }
 
 //SetTalk
