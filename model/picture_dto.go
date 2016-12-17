@@ -2,6 +2,6 @@ package model
 
 //PictureDTO picture dto for upload
 type PictureDTO struct {
-	Picture     string `json:"picture"`
-	SpeakerName string `json:"SpeakerName"`
+	PictureID	  int64  `json:"pictureID,omitempty"`
+	SpeakerPicture    string `json:"speakerPicture"`
 }

@@ -15,7 +15,8 @@ func SetPictureRoutes(router *mux.Router) *mux.Router {
 	pictureController := &controllers.PictureController{}
 
 	router.HandleFunc(picturePath+"/{talkID:[0-9]+}", pictureController.Download).Methods("GET")
-	//router.HandleFunc(picturePath, pictureController.Upload).Methods("POST")
+	router.HandleFunc(picturePath, pictureController.Upload).Methods("POST")
+	router.HandleFunc(picturePath+"/edit", pictureController.Update).Methods("POST")
 
 	return router
 }
