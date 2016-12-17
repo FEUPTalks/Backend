@@ -262,6 +262,7 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
+	// Send confirmation email
 	if newState == int(talkStateFactory.GetAcceptedTalkStateValue()) {
 		authBackend, err := authentication.GetJWTAuthenticationBackend()
 		if err != nil {
@@ -284,7 +285,19 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 
 		email := &model.Email{talk.ProponentEmail, talk.ProponentName, editURL.String()}
 
-		err = services.SendEmailConfirmation(email)
+		err = services.SendEmailConfirmation(email, services.Link)
+		if err != nil {
+			util.ErrHandler(err, writer, http.StatusInternalServerError)
+			return
+		}
+	}
+	// Send reject email
+	if newState == int(talkStateFactory.GetRejectedTalkStateValue()) {
+
+		editURL := url.URL{}
+		email := &model.Email{talk.ProponentEmail, talk.ProponentName, editURL.String()}
+
+		err = services.SendEmailConfirmation(email, services.Reject)
 		if err != nil {
 			util.ErrHandler(err, writer, http.StatusInternalServerError)
 			return
