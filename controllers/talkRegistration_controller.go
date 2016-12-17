@@ -201,7 +201,7 @@ func sendEmailForTalkRegistrationReplacementConfirmation(replacementOfTalkRegist
 	emailToSend.NameTo = replacementOfTalkRegistration.Name
 	emailToSend.URL = confirmationLink.String()
 
-	err = services.SendEmailConfirmation(emailToSend)
+	err = services.SendEmailConfirmation(emailToSend, services.Link)
 	if err != nil {
 		return err
 	}
