@@ -6,10 +6,11 @@ import (
 
 	"github.com/FEUPTalks/Backend/database"
 	"github.com/FEUPTalks/Backend/util"
-)
-
-const (
-	filepath string = "Users/Pedro/Documents/"
+	"github.com/FEUPTalks/Backend/model"
+	"encoding/json"
+	"log"
+	"github.com/gorilla/mux"
+	"strconv"
 )
 
 var allowedTypes = [...]string{"image/jpeg", "image/jpg", "image/png"}
@@ -219,8 +220,9 @@ func (*PictureController) Upload(writer http.ResponseWriter, request *http.Reque
 
 //Download download files from the server
 func (*PictureController) Download(writer http.ResponseWriter, request *http.Request) {
-	id := request.FormValue("talkID")
-	if id == "" {
+	vars := mux.Vars(request)
+	id, err := strconv.Atoi(vars["talkID"])
+	if id == 0 {
 		util.ErrHandler(errors.New("Picture not found"), writer, http.StatusNotFound)
 		return
 	}
@@ -231,8 +233,65 @@ func (*PictureController) Download(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	instance.GetPictureByTalkID(id)
+	pic, err := instance.GetPictureByTalkID(strconv.Itoa(id))
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusNotFound)
+		return
+	}
 
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
-	writer.Header().Set("Content-Type", "application/json")
+	util.SendJSON(writer, request, pic, http.StatusOK)
+}
+
+//Upload base64 picture to the server
+func (*PictureController) Upload(writer http.ResponseWriter, request *http.Request) {
+	pic := model.PictureDTO{}
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&pic)
+	if err != nil {
+		log.Println(err)
+		util.ErrHandler(errors.New("Picture not found"), writer, http.StatusNotFound)
+		return
+	}
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusNotFound)
+		return
+	}
+
+	var id int64 = 0
+
+	id, err = instance.SavePicture(pic)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	util.SendJSON(writer, request, id, http.StatusCreated)
+}
+
+//Update base64 picture to the server
+func (*PictureController) Update(writer http.ResponseWriter, request *http.Request) {
+	pic := model.PictureDTO{}
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&pic)
+	if err != nil {
+		log.Println(err)
+		util.ErrHandler(errors.New("Picture not found"), writer, http.StatusNotFound)
+		return
+	}
+
+	instance, err := database.GetTalkDatabaseManagerInstance()
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusNotFound)
+		return
+	}
+
+	id, err := instance.UpdatePicture(pic)
+	if err != nil {
+		util.ErrHandler(err, writer, http.StatusInternalServerError)
+		return
+	}
+
+	util.SendJSON(writer, request, id, http.StatusCreated)
 }

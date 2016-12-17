@@ -20,7 +20,7 @@ type Talk struct {
 	SpeakerName        string    `json:"speakerName"`
 	SpeakerBrief       string    `json:"speakerBrief"`
 	SpeakerAffiliation string    `json:"speakerAffiliation"`
-	SpeakerPicture     string    `json:"speakerPicture"`
+	SpeakerPicture     int       `json:"speakerPicture"`
 	HostName           string    `json:"hostName"`
 	HostEmail          string    `json:"hostEmail"`
 	Snack              int       `json:"snack"`

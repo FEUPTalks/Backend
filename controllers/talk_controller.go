@@ -120,6 +120,7 @@ func (*TalkController) Create(writer http.ResponseWriter, request *http.Request)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	instance.SaveTalk(talkToCreate)
 
 	writer.WriteHeader(http.StatusCreated)
@@ -261,7 +262,7 @@ func (*TalkController) SetTalkState(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	if newState == 2 {
+	if newState == int(talkStateFactory.GetAcceptedTalkStateValue()) {
 		authBackend, err := authentication.GetJWTAuthenticationBackend()
 		if err != nil {
 			util.ErrHandler(err, writer, http.StatusInternalServerError)

@@ -563,14 +563,15 @@ func (manager *talkDatabaseManager) SetTalkOther(talkID int, other string) error
 	}
 	return nil
 }
-func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) {
-	stmt, err := manager.database.Prepare("insert into picture (filepath) values (?)")
+
+func (manager *talkDatabaseManager) SavePicture(pic model.PictureDTO) (int64, error) {
+	stmt, err := manager.database.Prepare("insert into picture (speakerpicture) values (?)")
 	if err != nil {
 		log.Println(err)
 		return 0, err
 	}
 
-	result, err := stmt.Exec(filepath)
+	result, err := stmt.Exec(pic.SpeakerPicture)
 	if err != nil {
 		log.Println(err)
 		return 0, err
@@ -583,6 +584,22 @@ func (manager *talkDatabaseManager) SavePicture(filepath string) (int64, error) 
 	}
 
 	return id, nil
+}
+
+func (manager *talkDatabaseManager) UpdatePicture(pic model.PictureDTO) (int64, error) {
+	stmt, err := manager.database.Prepare("update picture SET speakerpicture=? WHERE pictureID=?")
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	_, err = stmt.Exec(pic.SpeakerPicture, pic.PictureID)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	return pic.PictureID, nil
 }
 
 //GetPicture
